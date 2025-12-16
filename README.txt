@@ -73,6 +73,90 @@ RUN A BENCHMARK (END-TO-END CHECKLIST)
 This is a tool-agnostic checklist. Use the canonical templates in docs/07..docs/10 for
 copy/paste content and recordkeeping.
 
+STARTING FROM ZERO (HAVE NOT EVEN CLONED THE REPO YET)
+------------------------------------------------------
+This repo is the SPEC HARNESS. The “usable application” is the implementation produced by the
+AI tool under test in your local workspace (plus a contract artifact + run instructions + evidence).
+
+0) Get the repository locally
+   a) Obtain the repository URL from your source control host.
+      NOTE: If you fork this repo, use your fork’s URL in the clone command below.
+   b) Clone it locally:
+      - git clone https://github.com/rsdickerson/pawmate-ai-challenge.git
+      - cd [repo-folder]
+   c) Open the folder in your AI tool/IDE.
+   d) Record a frozen spec reference for the run log:
+      - Preferred: git commit SHA (e.g., output of: git rev-parse HEAD)
+      - Alternative: tag name, or immutable archive id/hash if not using git
+
+1) Select the benchmark target (before you start any tool)
+   a) Choose ONE model: Model A (Minimum) OR Model B (Full).
+      - Source of truth: docs/01-Master_Functional_Spec.md
+   b) Choose ONE API style: REST OR GraphQL (do not implement both).
+   c) Decide what you are benchmarking:
+      - tool name + version/build id
+      - environment (OS/arch + runtime versions)
+
+2) Create a Run 1 folder (operator-owned artifacts)
+   a) Create a folder for Run 1 artifacts (location is operator choice). Example:
+      - runs/[tool_name]/[spec_ref]/Model[A|B]/Run1/
+   b) Save a copy of the prompt wrapper text you will submit (exact text) into the run folder.
+   c) Create a Run 1 record file by copying:
+      - docs/08-Appendix_G_Run_Log_Template.md
+      into your run folder and begin filling it.
+
+3) Start Run 1 (the AI run that produces the application)
+   a) Copy/paste docs/07-Appendix_F_Prompt_Wrapper.md into the AI tool as the FIRST message.
+   b) Fill only the bracketed fields:
+      - Tool Under Test, Run ID, Frozen Spec Reference, Workspace Path
+      - Target Model selection (A or B)
+      - API Style selection (REST or GraphQL)
+   c) Start the timer at prompt submission (TTFR/TTFC are measured from this point).
+
+4) During Run 1 (capture clarifications + assumptions)
+   a) Record any clarification questions the tool asks that require your input (M-03).
+   b) Record any explicit assumptions the tool makes as ASM-#### (smallest compliant).
+   c) Save the full tool transcript to the run folder (raw).
+
+5) “First runnable” stop condition (TTFR)
+   a) Follow the tool’s “Run Instructions” exactly (copy/paste, non-interactive).
+   b) TTFR ends when:
+      - the tool has provided complete run instructions, AND
+      - following them results in the system being runnable without operator code edits.
+   c) Record:
+      - the exact commands executed
+      - the first successful start confirmation evidence (log line or screenshot)
+
+6) Determinism requirement (reset-to-seed + golden checks)
+   a) Invoke reset-to-seed twice (must be non-interactive and idempotent).
+   b) Verify Appendix B golden checks after reset:
+      - seeded animals exist (ANM-0001..ANM-0005 golden fields)
+      - seeded images exist and ordering rules hold (if images in scope)
+      - seeded applications/history expectations as applicable
+      - Model B only: seeded users exist and search queries match expected IDs
+   c) Save evidence outputs into the run folder.
+
+7) Feature complete stop condition (TTFC)
+   a) Run acceptance checks for the selected model (Appendix D) and record pass/fail with evidence.
+   b) TTFC ends when:
+      - reset-to-seed + determinism checks are runnable and evidenced, AND
+      - the implementation is feature-complete per Appendix D for the selected model.
+
+8) Required Run 1 artifacts (what you must have at the end)
+   a) Implementation in the workspace (the usable application artifact)
+   b) Run instructions (run / reset-to-seed / verify acceptance)
+   c) Contract artifact (OpenAPI if REST, schema if GraphQL)
+   d) Acceptance checklist + evidence bundle (Appendix D mapped)
+   e) Determinism evidence bundle (Appendix B reset + golden checks)
+   f) Overreach notes/evidence (NOR-* violations or features beyond REQ-*)
+
+9) Run 2 (reproducibility requirement)
+   Repeat the full process for Run 2 using the same:
+   - frozen spec reference
+   - target model
+   - API style
+   and record differences between runs (Appendix E).
+
 1) Select the benchmark target (before you start any tool)
    a) Choose ONE model: Model A (Minimum) OR Model B (Full).
       - Source of truth: docs/01-Master_Functional_Spec.md

@@ -53,6 +53,30 @@ Use the templates in `docs/` rather than inventing new process.
   - Score using `docs/09-Appendix_H_Scoring_Rubric.md` (grounded in Appendix E metrics/evidence).
   - Compare tools using `docs/10-Appendix_I_Comparison_Report_Template.md`.
 
+## First benchmark run (from “nothing” to a runnable app artifact)
+This repo is the **spec harness**. The **usable application** is the artifact produced by the AI tool under test (code + run instructions + contract + evidence bundle).
+
+- **Get the repo locally**
+  - Clone the repository (use your repo URL) and open it in your tool/IDE.
+  - Record the frozen spec reference (e.g., commit SHA) for the run log.
+- **Pick a benchmark target**
+  - Choose **Model A** or **Model B** in `docs/01-Master_Functional_Spec.md`.
+  - Choose exactly one API style: **REST** or **GraphQL**.
+- **Create a run folder (operator-owned)**
+  - Create a folder to store artifacts (prompt text, transcript, evidence) for Run 1.
+  - Copy `docs/08-Appendix_G_Run_Log_Template.md` into that folder and start filling it.
+- **Run the AI tool under test**
+  - Copy/paste `docs/07-Appendix_F_Prompt_Wrapper.md` into the tool and fill only the bracketed fields.
+  - The tool should generate a runnable implementation **in your workspace**, plus a contract artifact and run instructions.
+- **Verify “first runnable” and capture evidence**
+  - Follow the tool’s run instructions to start the application (non-interactive commands).
+  - Stop TTFR when the system is runnable (Appendix E) and record evidence.
+- **Verify reset-to-seed + acceptance**
+  - Run reset-to-seed twice and verify golden checks (Appendix B).
+  - Run acceptance checks (Appendix D) and record pass/fail + evidence.
+
+For the full step-by-step operator checklist, see `README.txt`.
+
 ## Repository note (migration context)
 - This PawMate spec was derived from a prior **Pet Store** benchmarking harness.
 - The **PawMate** canonical spec lives in `docs/` at the repository root.
