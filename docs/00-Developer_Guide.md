@@ -4,7 +4,7 @@ This is the **single entrypoint** into the numbered `docs/` set. Use it to navig
 
 ## Where to start (by intent)
 - **I want a high-level repo overview**: start at `../README.md`
-- **I want an end-to-end operator checklist (plain text)**: start at `../README.txt`
+- **I want an end-to-end operator checklist**: start at `../README.md` (see “Operator guide (step-by-step)”)
 - **I want the canonical spec + appendices/templates**: start here, then follow the doc map below
 
 ## Doc map (numbered, canonical)

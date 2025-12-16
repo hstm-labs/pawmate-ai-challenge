@@ -75,7 +75,45 @@ This repo is the **spec harness**. The **usable application** is the artifact pr
   - Run reset-to-seed twice and verify golden checks (Appendix B).
   - Run acceptance checks (Appendix D) and record pass/fail + evidence.
 
-For the full step-by-step operator checklist, see `README.txt`.
+### Operator guide (step-by-step)
+This repository does **not** ship an application. The “usable application” is created by the AI tool under test in your local workspace, along with the benchmark artifact bundle (contract + instructions + evidence).
+
+#### Starting from zero (have not even cloned the repo yet)
+0) **Get the repository locally**
+- Clone it:
+  - `git clone https://github.com/rsdickerson/pawmate-ai-challenge.git`
+  - If you fork this repo, substitute your fork URL in the clone command.
+- Open the folder in your AI tool/IDE.
+- Record a frozen spec reference for the run log (prefer a git commit SHA).
+
+1) **Select the benchmark target**
+- Choose **Model A** or **Model B** in `docs/01-Master_Functional_Spec.md`.
+- Choose exactly one API style: **REST** or **GraphQL**.
+
+2) **Create a Run 1 folder (operator-owned artifacts)**
+- Create a run folder (example): `runs/[tool_name]/[spec_ref]/Model[A|B]/Run1/`
+- Copy `docs/08-Appendix_G_Run_Log_Template.md` into it and start filling it.
+
+3) **Start Run 1 (the AI run that produces the application)**
+- Copy/paste `docs/07-Appendix_F_Prompt_Wrapper.md` into the AI tool as the first message.
+- Fill only the bracketed fields (tool/version, run id, frozen spec reference, workspace path, model, API style).
+
+4) **TTFR (“first runnable”)**
+- Follow the tool’s run instructions (copy/paste; non-interactive).
+- TTFR ends when the system is runnable without operator code edits (see `docs/06-Appendix_E_Benchmarking_Method.md`).
+
+5) **Determinism + acceptance (TTFC)**
+- Run reset-to-seed twice and verify Appendix B golden checks (`docs/03-Appendix_B_Seed_Data.md`).
+- Run acceptance checks for the selected model and save pass/fail evidence (`docs/05-Appendix_D_Acceptance_Criteria.md`).
+
+6) **Required artifacts to keep**
+- Tool prompt wrapper text (exact)
+- Full tool transcript
+- Run instructions (run / reset-to-seed / verify acceptance)
+- Contract artifact (OpenAPI or GraphQL schema)
+- Acceptance checklist + evidence bundle
+- Determinism evidence bundle
+- Overreach notes/evidence
 
 ## Repository note (migration context)
 - This PawMate spec was derived from a prior **Pet Store** benchmarking harness.
