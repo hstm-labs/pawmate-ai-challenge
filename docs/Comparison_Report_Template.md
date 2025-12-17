@@ -26,12 +26,12 @@
 
 ### 2) Benchmark Setup (Inputs + Consistency)
 - **frozen_inputs_used**:
-  - `docs/01-Master_Functional_Spec.md`
-  - `docs/02-Appendix_A_API_Contract.md`
-  - `docs/03-Appendix_B_Seed_Data.md`
-  - `docs/04-Appendix_C_Image_Handling.md`
-  - `docs/05-Appendix_D_Acceptance_Criteria.md`
-  - `docs/06-Appendix_E_Benchmarking_Method.md`
+  - `docs/Master_Functional_Spec.md`
+  - `docs/API_Contract.md`
+  - `docs/Seed_Data.md`
+  - `docs/Image_Handling.md`
+  - `docs/Acceptance_Criteria.md`
+  - `docs/Benchmarking_Method.md`
 - **operator_notes**: [any deviations from the standard procedure; if none, “None”]
 
 ---

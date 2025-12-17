@@ -14,6 +14,41 @@ This challenge is designed to be harder than a commerce catalog by adding:
 - **Policy enforcement**
 - **Decision transparency / explainability**
 
+## Quick Start (5 steps)
+
+**Prerequisites:** Bash shell (macOS/Linux)
+
+1. **Clone the repo** and open it in your AI coding tool:
+   ```bash
+   git clone https://github.com/rsdickerson/pawmate-ai-challenge.git
+   cd pawmate-ai-challenge
+   ```
+
+2. **Pick a profile** (Model × API style):
+   | Profile | Target Model | API Style |
+   |---------|--------------|-----------|
+   | `model-a-rest` | Model A (Minimum) | REST |
+   | `model-a-graphql` | Model A (Minimum) | GraphQL |
+   | `model-b-rest` | Model B (Full) | REST |
+   | `model-b-graphql` | Model B (Full) | GraphQL |
+
+3. **Generate your run folder and prompt**:
+   ```bash
+   ./scripts/initialize_run.sh --profile model-a-rest --tool "YourTool" --tool-ver "1.0"
+   ```
+   This creates `runs/YYYYMMDDTHHmm/` with:
+   - `run.config` — your run parameters
+   - `start_build_prompt.txt` — the prompt to paste into your AI tool
+   - `PawMate/` — workspace folder for all generated code
+
+4. **Open a new AI agent** and paste the contents of `start_build_prompt.txt` as the first message.
+
+5. **Keep all artifacts** in `runs/.../PawMate/` for scoring.
+
+That's it! The AI tool will generate the implementation. See the [Operator Guide](#operator-guide-step-by-step) below for verification and scoring.
+
+---
+
 ## Core constraints (read this first)
 The spec is designed to support reproducible benchmarking. Key constraints include:
 
@@ -29,13 +64,14 @@ The spec is designed to support reproducible benchmarking. Key constraints inclu
 - **No external integrations**: do not require third-party services (including external storage/CDN, email/SMS, SSO providers, etc.).
 - **No scope creep / overreach**: do not invent features beyond explicit `REQ-*` requirements; out-of-scope areas are labeled `NOR-*`.
 - **Privacy is out of scope**: privacy requirements are explicitly non-goals for this benchmark.
+- **Technology-agnostic**: the spec does not prescribe a programming language, framework, or database — the AI tool chooses the stack.
 
 ## Spec versioning
 The spec uses **semantic versioning** with git tags for immutable references.
 
 ### Finding the current version
 - **Root file**: `SPEC_VERSION` contains the canonical version string (e.g., `v1.0.0`).
-- **Spec header**: The same version appears at the top of `docs/01-Master_Functional_Spec.md`.
+- **Spec header**: The same version appears at the top of `docs/Master_Functional_Spec.md`.
 
 ### Citing a frozen spec reference
 When running a benchmark, use the spec version tag as the **Frozen Spec Reference** (e.g., `v1.0.0`). This ensures reproducibility—anyone can check out that exact tag to see the spec you used.
@@ -43,7 +79,7 @@ When running a benchmark, use the spec version tag as the **Frozen Spec Referenc
 ### Releasing a new spec version
 1. Edit the spec docs as needed.
 2. Decide the next SemVer (`vMAJOR.MINOR.PATCH`).
-3. Update `SPEC_VERSION` and the header in `docs/01-Master_Functional_Spec.md` to the new version.
+3. Update `SPEC_VERSION` and the header in `docs/Master_Functional_Spec.md` to the new version.
 4. Commit with a message like: `spec: bump to vX.Y.Z`.
 5. Create an **annotated** git tag on that commit:
    ```bash
@@ -62,89 +98,63 @@ Run the verification script to check that `SPEC_VERSION`, the spec doc, and the 
 ```
 
 ## Canonical docs (source of truth)
-- `docs/01-Master_Functional_Spec.md` — the functional spec, requirement IDs (`REQ-*`), non-requirements (`NOR-*`), Model A/B.
-- `docs/02-Appendix_A_API_Contract.md` — contract artifact requirements (REST/GraphQL).
-- `docs/03-Appendix_B_Seed_Data.md` — deterministic seed dataset + reset-to-seed requirements.
-- `docs/04-Appendix_C_Image_Handling.md` — image handling constraints (if applicable to the selected model).
-- `docs/05-Appendix_D_Acceptance_Criteria.md` — acceptance criteria used to determine “feature complete”.
-- `docs/06-Appendix_E_Benchmarking_Method.md` — benchmarking procedure + required artifacts + evidence-first scoring inputs.
+- `docs/Master_Functional_Spec.md` — the functional spec, requirement IDs (`REQ-*`), non-requirements (`NOR-*`), Model A/B.
+- `docs/API_Contract.md` — contract artifact requirements (REST/GraphQL).
+- `docs/Seed_Data.md` — deterministic seed dataset + reset-to-seed requirements.
+- `docs/Image_Handling.md` — image handling constraints (if applicable to the selected model).
+- `docs/Acceptance_Criteria.md` — acceptance criteria used to determine “feature complete”.
+- `docs/Benchmarking_Method.md` — benchmarking procedure + required artifacts + evidence-first scoring inputs.
 
-## How to run a benchmark (quickstart — links first)
-Use the templates in `docs/` rather than inventing new process.
+## Operator Guide (step-by-step)
+This repository does **not** ship an application. The "usable application" is created by the AI tool under test in your local workspace, along with the benchmark artifact bundle (contract + instructions + evidence).
 
-- **Choose a target**:
-  - Pick **Model A** or **Model B** in `docs/01-Master_Functional_Spec.md`.
-  - Pick exactly one API style: **REST** or **GraphQL** (do not implement both).
-- **Run with the standardized wrapper**:
-  - Copy/paste and fill the template in `docs/07-Appendix_F_Prompt_Wrapper.md`.
-  - Keep the “frozen spec reference” pinned and record any assumptions as `ASM-*` (per the wrapper/spec).
-- **Record the run as you go**:
-  - Use `docs/08-Appendix_G_Run_Log_Template.md` (one per tool, per run; Run 1 and Run 2).
-- **Score and compare (evidence-first)**:
-  - Score using `docs/09-Appendix_H_Scoring_Rubric.md` (grounded in Appendix E metrics/evidence).
-  - Compare tools using `docs/10-Appendix_I_Comparison_Report_Template.md`.
+> **TL;DR:** Use the [Quick Start](#quick-start-5-steps) above to generate your run folder and prompt, then follow these steps for verification and scoring.
 
-## First benchmark run (from “nothing” to a runnable app artifact)
-This repo is the **spec harness**. The **usable application** is the artifact produced by the AI tool under test (code + run instructions + contract + evidence bundle).
+### 0) Get the repository locally
+```bash
+git clone https://github.com/rsdickerson/pawmate-ai-challenge.git
+cd pawmate-ai-challenge
+```
+Open the folder in your AI tool/IDE.
 
-- **Get the repo locally**
-  - Clone the repository (use your repo URL) and open it in your tool/IDE.
-  - Record the frozen spec reference (the spec version tag, e.g., `v1.0.0`) for the run log.
-- **Pick a benchmark target**
-  - Choose **Model A** or **Model B** in `docs/01-Master_Functional_Spec.md`.
-  - Choose exactly one API style: **REST** or **GraphQL**.
-- **Create a run folder (operator-owned)**
-  - Create a folder to store artifacts (prompt text, transcript, evidence) for Run 1.
-  - Copy `docs/08-Appendix_G_Run_Log_Template.md` into that folder and start filling it.
-- **Run the AI tool under test**
-  - Copy/paste `docs/07-Appendix_F_Prompt_Wrapper.md` into the tool and fill only the bracketed fields.
-  - The tool should generate a runnable implementation **in your workspace**, plus a contract artifact and run instructions.
-- **Verify “first runnable” and capture evidence**
-  - Follow the tool’s run instructions to start the application (non-interactive commands).
-  - Stop TTFR when the system is runnable (Appendix E) and record evidence.
-- **Verify reset-to-seed + acceptance**
-  - Run reset-to-seed twice and verify golden checks (Appendix B).
-  - Run acceptance checks (Appendix D) and record pass/fail + evidence.
+### 1) Generate a run folder
+Use the run initializer to create a timestamped run folder with all config pre-filled:
+```bash
+./scripts/initialize_run.sh --profile model-a-rest --tool "YourTool" --tool-ver "1.0"
+```
 
-### Operator guide (step-by-step)
-This repository does **not** ship an application. The “usable application” is created by the AI tool under test in your local workspace, along with the benchmark artifact bundle (contract + instructions + evidence).
+This creates:
+- `runs/YYYYMMDDTHHmm/run.config` — run parameters
+- `runs/YYYYMMDDTHHmm/start_build_prompt.txt` — the prompt to use
+- `runs/YYYYMMDDTHHmm/PawMate/` — workspace for the implementation
 
-#### Starting from zero (have not even cloned the repo yet)
-0) **Get the repository locally**
-- Clone it:
-  - `git clone https://github.com/rsdickerson/pawmate-ai-challenge.git`
-  - If you fork this repo, substitute your fork URL in the clone command.
-- Open the folder in your AI tool/IDE.
-- Record a frozen spec reference for the run log (use the spec version tag, e.g., `v1.0.0`).
+### 2) Start the AI run
+- Open a new AI agent/chat session.
+- Copy the contents of `start_build_prompt.txt` and paste as the first message.
+- The tool generates the implementation in the `PawMate/` workspace folder.
 
-1) **Select the benchmark target**
-- Choose **Model A** or **Model B** in `docs/01-Master_Functional_Spec.md`.
-- Choose exactly one API style: **REST** or **GraphQL**.
+### 3) TTFR ("first runnable")
+- Follow the tool's run instructions (copy/paste; non-interactive).
+- TTFR ends when the system is runnable without operator code edits (see `docs/Benchmarking_Method.md`).
 
-2) **Create a Run 1 folder (operator-owned artifacts)**
-- Create a run folder (example): `runs/[tool_name]/[spec_ref]/Model[A|B]/Run1/`
-- Copy `docs/08-Appendix_G_Run_Log_Template.md` into it and start filling it.
+### 4) Determinism + acceptance (TTFC)
+- Run reset-to-seed twice and verify Appendix B golden checks (`docs/Seed_Data.md`).
+- Run acceptance checks for the selected model and save pass/fail evidence (`docs/Acceptance_Criteria.md`).
 
-3) **Start Run 1 (the AI run that produces the application)**
-- Copy/paste `docs/07-Appendix_F_Prompt_Wrapper.md` into the AI tool as the first message.
-- Fill only the bracketed fields (tool/version, run id, frozen spec reference, workspace path, model, API style).
-
-4) **TTFR (“first runnable”)**
-- Follow the tool’s run instructions (copy/paste; non-interactive).
-- TTFR ends when the system is runnable without operator code edits (see `docs/06-Appendix_E_Benchmarking_Method.md`).
-
-5) **Determinism + acceptance (TTFC)**
-- Run reset-to-seed twice and verify Appendix B golden checks (`docs/03-Appendix_B_Seed_Data.md`).
-- Run acceptance checks for the selected model and save pass/fail evidence (`docs/05-Appendix_D_Acceptance_Criteria.md`).
-
-6) **Required artifacts to keep**
-- Tool prompt wrapper text (exact)
-- Full tool transcript
-- Run instructions (run / reset-to-seed / verify acceptance)
+### 5) Required artifacts to keep
+All artifacts should be saved in the run folder (`runs/YYYYMMDDTHHmm/`):
+- `run.config` — auto-generated by the initializer
+- `start_build_prompt.txt` — auto-generated by the initializer
+- Full tool transcript (save as `transcript.md` or similar)
+- Run instructions (from the tool output)
 - Contract artifact (OpenAPI or GraphQL schema)
 - Acceptance checklist + evidence bundle
 - Determinism evidence bundle
 - Overreach notes/evidence
+
+### 6) Scoring and comparison
+- Score using `docs/Scoring_Rubric.md` (grounded in Appendix E metrics/evidence).
+- Compare tools using `docs/Comparison_Report_Template.md`.
 
 ## Repository note (migration context)
 - This PawMate spec was derived from a prior **Pet Store** benchmarking harness.

@@ -10,10 +10,10 @@ Key design goals:
 - Includes **happy-path** and **error-path** cases
 
 Dependencies (source of truth):
-- `docs/01-Master_Functional_Spec.md` (capabilities, `REQ-*` and `NOR-*`)
-- `docs/02-Appendix_A_API_Contract.md` (error categories, pagination/ordering determinism)
-- `docs/03-Appendix_B_Seed_Data.md` (golden seed records + determinism/reset invariants)
-- `docs/04-Appendix_C_Image_Handling.md` (image constraints + seeded image expectations)
+- `docs/Master_Functional_Spec.md` (capabilities, `REQ-*` and `NOR-*`)
+- `docs/API_Contract.md` (error categories, pagination/ordering determinism)
+- `docs/Seed_Data.md` (golden seed records + determinism/reset invariants)
+- `docs/Image_Handling.md` (image constraints + seeded image expectations)
 
 ---
 

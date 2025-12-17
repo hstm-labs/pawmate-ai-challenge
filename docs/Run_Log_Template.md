@@ -2,6 +2,8 @@
 
 > **Operator instructions:** Create one copy of this file per **Tool Under Test (TUT)** per **run** (Run 1 and Run 2). Fill all fields. If a metric cannot be supported by evidence, record **Unknown** and explain what evidence is missing (do not guess).
 
+> **AI Run Report:** The AI tool should generate `benchmark/ai_run_report.md` containing timestamps, tech stack, and test results. This report provides machine-comparable data for cross-tool benchmarking. Reference it in Section 5 below.
+
 ---
 
 ### 0) Run Identity (Operator fills)
@@ -21,12 +23,12 @@
 - **prompt_wrapper_path**: [path to saved wrapper text]
 - **prompt_submit_timestamp**: [ISO-8601]
 - **in_scope_docs**:
-  - `docs/01-Master_Functional_Spec.md`
-  - `docs/02-Appendix_A_API_Contract.md`
-  - `docs/03-Appendix_B_Seed_Data.md`
-  - `docs/04-Appendix_C_Image_Handling.md`
-  - `docs/05-Appendix_D_Acceptance_Criteria.md`
-  - `docs/06-Appendix_E_Benchmarking_Method.md`
+  - `docs/Master_Functional_Spec.md`
+  - `docs/API_Contract.md`
+  - `docs/Seed_Data.md`
+  - `docs/Image_Handling.md`
+  - `docs/Acceptance_Criteria.md`
+  - `docs/Benchmarking_Method.md`
 - **api_style_choice_validation**:
   - [ ] Implemented exactly one API style
   - [ ] Contract artifact produced for that style
@@ -89,6 +91,8 @@
 - **acceptance_evidence_path**: [path to logs/screenshots]
 - **determinism_evidence_path**: [path]
 - **overreach_evidence_path**: [path]
+- **ai_run_report_path**: benchmark/ai_run_report.md
+- **automated_tests_path**: [path to test folder/files]
 
 #### 5.2 Completeness check
 - [ ] Prompt wrapper saved
@@ -98,6 +102,8 @@
 - [ ] Acceptance checklist + evidence saved
 - [ ] Determinism evidence saved
 - [ ] Overreach notes/evidence saved
+- [ ] AI run report saved (benchmark/ai_run_report.md)
+- [ ] Automated tests saved
 - **notes**: [missing items or Unknowns]
 
 ---

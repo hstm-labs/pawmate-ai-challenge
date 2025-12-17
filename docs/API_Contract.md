@@ -3,7 +3,7 @@
 ## Purpose
 This appendix defines what the **API contract artifact** MUST contain so that implementations are verifiable and benchmarkable while still allowing implementers to choose **REST or GraphQL** (choice, not both).
 
-This appendix is normative for the contract artifact and is aligned to `docs/01-Master_Functional_Spec.md` requirement IDs.
+This appendix is normative for the contract artifact and is aligned to `docs/Master_Functional_Spec.md` requirement IDs.
 
 ## Scope and Constraints (Normative)
 - Exactly **two selectable models** exist: **Model A (Minimum)** and **Model B (Full)**.
@@ -203,19 +203,21 @@ This section is intentionally high-level; detailed constraints are in Appendix C
 Required contract-defined behaviors:
 - The contract MUST specify whether images are:
   - uploaded binary/media stored locally (e.g., filesystem) and served via the API, OR
-  - stored as image references still retrievable via the API (no external integrations).
+  - stored as image references with deterministic placeholder content served via the API (no external integrations).
 - The contract MUST define the image association model: image records/references are associated to exactly one `animalId` unless otherwise stated.
 
 Required operations (contract MUST define equivalents):
 - **AddImageToAnimal**
 - **RemoveImageFromAnimal**
-- **GetImage** (if binary/media is used)
+- **GetImageMetadata** — retrieve image metadata by `imageId`
+- **GetImageContent** — retrieve image binary content by `imageId` (MUST return valid image bytes with correct `Content-Type`; for stored references, return deterministic placeholder bytes)
 
 Minimum image metadata/reference fields (if images are structured objects):
 - `imageId` OR stable reference string
-- `contentType` (if known)
+- `contentType` (required; e.g., `image/jpeg`)
 - `fileName`
 - `ordinal` (for deterministic ordering)
+- `contentUrl` (required; URL/path to retrieve image content)
 
 ---
 

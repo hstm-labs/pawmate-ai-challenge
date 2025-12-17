@@ -1,0 +1,8 @@
+# Ignore all run folders (datetime-stamped)
+*
+
+# But keep these files
+!.gitkeep
+!.gitignore
+!README.md
+

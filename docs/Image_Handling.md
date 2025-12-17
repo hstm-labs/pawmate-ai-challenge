@@ -2,9 +2,9 @@
 
 ## Purpose
 This appendix defines **simple, minimal, maintainable** image handling requirements that satisfy:
-- `docs/01-Master_Functional_Spec.md`: `REQ-IMG-0001-A`..`REQ-IMG-0003-A`
-- `docs/02-Appendix_A_API_Contract.md`: image contract surface and error/determinism rules
-- `docs/03-Appendix_B_Seed_Data.md`: seeded images IMG-0001..IMG-0004 and deterministic per-animal ordering expectations
+- `docs/Master_Functional_Spec.md`: `REQ-IMG-0001-A`..`REQ-IMG-0003-A`
+- `docs/API_Contract.md`: image contract surface and error/determinism rules
+- `docs/Seed_Data.md`: seeded images IMG-0001..IMG-0004 and deterministic per-animal ordering expectations
 
 This appendix is **technology-agnostic** and compatible with **REST or GraphQL** implementations.
 
@@ -23,6 +23,8 @@ Image handling MUST remain simple and MUST NOT require:
 ## Image Association Models (Acceptable Options)
 Implementers MUST choose **one** of the following abstract models and document the choice in the API contract artifact (Appendix A).
 
+**Critical requirement for both options:** The API MUST provide a way to retrieve image **content** (binary bytes) by `imageId`. This is required so that UI clients can render images without external dependencies.
+
 ### Option 1 — Stored Media (Binary Stored Locally, Served via API)
 **Definition:** The system stores the image binary locally (e.g., filesystem or embedded storage) and serves image content via the API.
 
@@ -31,13 +33,17 @@ Minimum required behaviors (high level):
 - The API supports retrieving image metadata and retrieving image content.
 - Animal read responses include `images[]` entries that reference the stored images.
 
-### Option 2 — Stored References (References Stored, Retrievable via API Without External Dependencies)
-**Definition:** The system stores image references (logical references controlled by the system) and exposes them via the API. References MUST NOT require any external service dependency to be meaningful/usable in benchmarks.
+### Option 2 — Stored References with Deterministic Placeholders
+**Definition:** The system stores image references (logical metadata controlled by the system) and exposes them via the API. References MUST NOT require any external service dependency to be meaningful/usable in benchmarks.
 
 Minimum required behaviors (high level):
 - The API supports adding/removing an image reference to/from an animal.
 - Animal read responses include `images[]` entries that expose those references.
-- If the reference points to content, that content MUST be retrievable via the API (not via external CDN/storage).
+- The API MUST provide a way to retrieve image **content** (binary bytes) by `imageId`.
+  - **REST example**: `GET /v1/images/{imageId}/content`
+  - **GraphQL example**: a `GetImageContent(imageId)` query that returns `contentType` and image bytes (e.g., Base64) in the response
+- The content returned MUST be valid image bytes matching the `contentType` (e.g., valid JPEG/PNG/WebP).
+- If actual binary uploads are not implemented, the system MUST return **deterministic placeholder image bytes** derived from the image metadata (e.g., tiny valid 1x1 pixel images). This ensures seeded images are renderable without external dependencies.
 
 ---
 
@@ -50,6 +56,9 @@ Regardless of option, an image associated with an animal MUST be representable w
 - `fileName` (logical name, not necessarily a filesystem path)
 - `contentType` (conceptual content type, e.g., `image/jpeg`)
 - `ordinal` (or equivalent ordering field used to present `images[]` deterministically)
+- `contentUrl` (URL/path or equivalent locator to retrieve the image content)
+  - **REST example**: `/v1/images/{imageId}/content`
+  - **GraphQL example**: `GetImageContent(imageId)` (operation reference; exact schema defined in the GraphQL contract)
 
 ### Recommended fields
 - `byteSize` (recommended for validation/transparency)
@@ -136,16 +145,21 @@ For any animal read response that includes `images[]`:
   - primary: `ordinal` ascending
   - tie-break: `imageId` (or stable reference) ascending
 
-### F-04: Retrieve image metadata and/or content
-The contract MUST define how clients retrieve images depending on the chosen option:
+### F-04: Retrieve image metadata and content (MUST)
+The contract MUST define how clients retrieve images. **Both metadata and content retrieval are required** regardless of the chosen option.
 
-- **Option 1 (Stored Media)**:
+- **Image metadata retrieval (MUST)**:
   - The API MUST support retrieving image metadata by `imageId`.
-  - The API MUST support retrieving image content by `imageId` as a binary response with correct `contentType`.
+  - Image metadata MUST include a `contentUrl` field (or equivalent locator) that tells clients how to retrieve image content:
+    - **REST example**: `/v1/images/{imageId}/content`
+    - **GraphQL example**: `GetImageContent(imageId)` (operation reference; exact schema defined in the GraphQL contract)
 
-- **Option 2 (Stored References)**:
-  - The API MUST support retrieving image metadata by `imageId` (or stable reference).
-  - If the implementation supports retrieval of image content, it MUST be retrievable via the API and MUST NOT depend on any external service.
+- **Image content retrieval (MUST)**:
+  - The API MUST support retrieving image content by `imageId` as a binary response with correct `Content-Type` header matching the image's `contentType`.
+  - For **Option 1 (Stored Media)**: return the stored binary content.
+  - For **Option 2 (Stored References)**: return deterministic placeholder bytes (valid image data matching the `contentType`).
+
+This requirement ensures that UI clients can render images for all seeded and newly-added images without external dependencies.
 
 ---
 
@@ -169,7 +183,8 @@ If Option 1 (Stored Media) is used:
 - Reset-to-seed MUST also restore the canonical **image content** for seeded images (or equivalent deterministic content) so that retrieval is functional after reset.
 - Reset-to-seed MUST delete any non-seed stored image content created after seed.
 
-If Option 2 (Stored References) is used:
-- Reset-to-seed MUST restore the canonical reference records such that the seeded references remain valid and retrievable via the API without external dependencies.
+If Option 2 (Stored References with Deterministic Placeholders) is used:
+- Reset-to-seed MUST restore the canonical reference records such that the seeded references remain valid.
+- The image content endpoint MUST return valid placeholder bytes for all seeded images after reset (same deterministic content as before reset).
 
 

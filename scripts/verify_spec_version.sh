@@ -4,7 +4,7 @@
 #
 # Validates that:
 #   1. SPEC_VERSION file exists and contains a valid vX.Y.Z string.
-#   2. docs/01-Master_Functional_Spec.md contains the same version string.
+#   2. docs/Master_Functional_Spec.md contains the same version string.
 #   3. (Optional, on tag builds) A git tag with that name exists and points to HEAD.
 #
 # Usage:
@@ -24,7 +24,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 SPEC_VERSION_FILE="$REPO_ROOT/SPEC_VERSION"
-SPEC_DOC="$REPO_ROOT/docs/01-Master_Functional_Spec.md"
+SPEC_DOC="$REPO_ROOT/docs/Master_Functional_Spec.md"
 
 REQUIRE_TAG=false
 if [[ "${1:-}" == "--require-tag" ]]; then

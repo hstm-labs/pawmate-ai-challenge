@@ -4,7 +4,7 @@
 Provide a practical rubric that converts the run logs and evidence artifacts into consistent scores across tools with minimal operator variance.
 
 **Source of truth** for scoring rules:
-- `docs/06-Appendix_E_Benchmarking_Method.md` (metrics M-01..M-11, overall score, penalties, Unknown handling, table schema)
+- `docs/Benchmarking_Method.md` (metrics M-01..M-11, overall score, penalties, Unknown handling, table schema)
 
 ## Non-negotiable rules (Normative)
 - **Evidence-first**: If required evidence is missing, record the value as **Unknown**. Do not infer or “best guess”.
@@ -13,7 +13,7 @@ Provide a practical rubric that converts the run logs and evidence artifacts int
 
 ## Inputs required to score (Operator checklist)
 You must have:
-- `docs/08-Appendix_G_Run_Log_Template.md` completed for Run 1 and Run 2
+- `docs/Run_Log_Template.md` completed for Run 1 and Run 2
 - Contract checklist results (Appendix A) for Run 1 and Run 2
 - Acceptance checklist results (Appendix D) for Run 1 and Run 2
 - Determinism/reset evidence (Appendix B) for Run 1 and Run 2

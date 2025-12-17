@@ -4,10 +4,10 @@
 Define a **repeatable, tool-agnostic, operator-light** method to run the same frozen spec through multiple AI coding tools and collect **comparison-ready** evidence.
 
 This appendix is designed to support benchmarking goals in:
-- `docs/01-Master_Functional_Spec.md` (Model A/B, no overreach, assumptions)
-- `docs/02-Appendix_A_API_Contract.md` (contract artifact completeness + determinism)
-- `docs/03-Appendix_B_Seed_Data.md` (reset-to-seed + determinism checks)
-- `docs/05-Appendix_D_Acceptance_Criteria.md` (feature-complete definition via acceptance criteria)
+- `docs/Master_Functional_Spec.md` (Model A/B, no overreach, assumptions)
+- `docs/API_Contract.md` (contract artifact completeness + determinism)
+- `docs/Seed_Data.md` (reset-to-seed + determinism checks)
+- `docs/Acceptance_Criteria.md` (feature-complete definition via acceptance criteria)
 
 ## Scope + Constraints (Normative)
 - **Tool-agnostic**: The procedure MUST work with any AI coding tool (IDE agent, CLI agent, web agent).
@@ -35,6 +35,7 @@ For each benchmark, record these **before** starting any tool runs:
 Each run MUST use a standardized wrapper that:
 - **Declares the target model** (A or B) explicitly.
 - **Pins the frozen spec reference** and states which files are in-scope inputs.
+- **Declares run independence**: the tool MUST NOT reference, rely on, or mention previous runs, earlier chats, or other run folders.
 - **Restates the overreach guardrail**: do not implement beyond `REQ-*` and respect `NOR-*`.
 - **Requires explicit assumptions** labeled `ASM-*` when the spec is ambiguous.
 - **Requires a contract artifact** compliant with Appendix A.
@@ -42,7 +43,7 @@ Each run MUST use a standardized wrapper that:
 - **Requires acceptance verification** against Appendix D for the selected model.
 - **Requires operator run instructions** that are copy/paste friendly (no interactive prompts).
 
-> Note: See `docs/07-Appendix_F_Prompt_Wrapper.md` for the concrete wrapper template; this appendix defines the requirement that a wrapper exists and what it must contain.
+> Note: See `prompts/api_start_prompt_template.md` for the API start prompt template; this appendix defines the requirement that a wrapper exists and what it must contain. Use `./scripts/initialize_run.sh` to render the templates with run-specific values.
 
 ## Benchmark Run Procedure (Normative)
 ### 0) Initialize the benchmark record (operator)
