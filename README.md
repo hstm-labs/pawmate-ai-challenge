@@ -30,6 +30,37 @@ The spec is designed to support reproducible benchmarking. Key constraints inclu
 - **No scope creep / overreach**: do not invent features beyond explicit `REQ-*` requirements; out-of-scope areas are labeled `NOR-*`.
 - **Privacy is out of scope**: privacy requirements are explicitly non-goals for this benchmark.
 
+## Spec versioning
+The spec uses **semantic versioning** with git tags for immutable references.
+
+### Finding the current version
+- **Root file**: `SPEC_VERSION` contains the canonical version string (e.g., `v1.0.0`).
+- **Spec header**: The same version appears at the top of `docs/01-Master_Functional_Spec.md`.
+
+### Citing a frozen spec reference
+When running a benchmark, use the spec version tag as the **Frozen Spec Reference** (e.g., `v1.0.0`). This ensures reproducibility—anyone can check out that exact tag to see the spec you used.
+
+### Releasing a new spec version
+1. Edit the spec docs as needed.
+2. Decide the next SemVer (`vMAJOR.MINOR.PATCH`).
+3. Update `SPEC_VERSION` and the header in `docs/01-Master_Functional_Spec.md` to the new version.
+4. Commit with a message like: `spec: bump to vX.Y.Z`.
+5. Create an **annotated** git tag on that commit:
+   ```bash
+   git tag -a vX.Y.Z -m "Spec version vX.Y.Z"
+   ```
+6. Push the commit and tag:
+   ```bash
+   git push origin main --tags
+   ```
+
+### Verifying spec version consistency
+Run the verification script to check that `SPEC_VERSION`, the spec doc, and the git tag are in sync:
+```bash
+./scripts/verify_spec_version.sh            # informational check
+./scripts/verify_spec_version.sh --require-tag  # strict check (for releases/CI)
+```
+
 ## Canonical docs (source of truth)
 - `docs/01-Master_Functional_Spec.md` — the functional spec, requirement IDs (`REQ-*`), non-requirements (`NOR-*`), Model A/B.
 - `docs/02-Appendix_A_API_Contract.md` — contract artifact requirements (REST/GraphQL).
@@ -58,7 +89,7 @@ This repo is the **spec harness**. The **usable application** is the artifact pr
 
 - **Get the repo locally**
   - Clone the repository (use your repo URL) and open it in your tool/IDE.
-  - Record the frozen spec reference (e.g., commit SHA) for the run log.
+  - Record the frozen spec reference (the spec version tag, e.g., `v1.0.0`) for the run log.
 - **Pick a benchmark target**
   - Choose **Model A** or **Model B** in `docs/01-Master_Functional_Spec.md`.
   - Choose exactly one API style: **REST** or **GraphQL**.
@@ -84,7 +115,7 @@ This repository does **not** ship an application. The “usable application” i
   - `git clone https://github.com/rsdickerson/pawmate-ai-challenge.git`
   - If you fork this repo, substitute your fork URL in the clone command.
 - Open the folder in your AI tool/IDE.
-- Record a frozen spec reference for the run log (prefer a git commit SHA).
+- Record a frozen spec reference for the run log (use the spec version tag, e.g., `v1.0.0`).
 
 1) **Select the benchmark target**
 - Choose **Model A** or **Model B** in `docs/01-Master_Functional_Spec.md`.

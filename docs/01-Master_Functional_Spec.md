@@ -1,5 +1,7 @@
 # Master Functional Specification (Technology-Agnostic)
 
+> **Spec Version:** `v1.0.0`
+
 > **Non-normative intro (How to read this spec):**
 > - This document defines **what** the system must do, not **how** to implement it.
 > - Requirements use RFC-style keywords (**MUST**, **MUST NOT**, **SHOULD**, **SHOULD NOT**, **MAY**).
