@@ -1,0 +1,36 @@
+{
+  "run_info": {
+    "tool": "cursor",
+    "version": "2.2.36",
+    "run_id": "cursor-ModelA-20251218T1407",
+    "model": "A",
+    "api_style": "REST",
+    "spec_version": "v2.0.0"
+  },
+  "timings": {
+    "generation_started": "2025-12-18T22:15:47.123Z",
+    "code_complete": "2025-12-18T22:17:30.000Z",
+    "build_clean": "2025-12-18T22:19:45.000Z",
+    "seed_loaded": "2025-12-18T22:19:49.000Z",
+    "app_started": "2025-12-18T22:19:52.397Z",
+    "all_tests_pass": "2025-12-18T22:20:40.000Z",
+    "total_minutes": 4.9
+  },
+  "test_results": {
+    "total": 34,
+    "passed": 34,
+    "failed": 0,
+    "pass_rate": 100
+  },
+  "environment": {
+    "os": "Darwin 24.6.0",
+    "backend_runtime": "Node.js(v18+)",
+    "backend_framework": "Express4.18.2"
+  },
+  "artifacts": {
+    "ai_run_report": "/Users/scott.dickerson/source/repos/pawmate-ai-challenge/runs/20251218T1407/PawMate/benchmark/ai_run_report.md",
+    "openapi_contract": "/Users/scott.dickerson/source/repos/pawmate-ai-challenge/runs/20251218T1407/PawMate/backend/openapi.yaml",
+    "run_instructions": "/Users/scott.dickerson/source/repos/pawmate-ai-challenge/runs/20251218T1407/PawMate/benchmark/run_instructions.md",
+    "acceptance_checklist": "/Users/scott.dickerson/source/repos/pawmate-ai-challenge/runs/20251218T1407/PawMate/benchmark/acceptance_checklist.md"
+  }
+}
