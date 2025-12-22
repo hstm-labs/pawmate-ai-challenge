@@ -3,13 +3,19 @@
 ## Purpose
 Provide a practical rubric that converts the run logs and evidence artifacts into consistent scores across tools with minimal operator variance.
 
-**Source of truth** for scoring rules:
-- `docs/Benchmarking_Method.md` (metrics M-01..M-11, overall score, penalties, Unknown handling, table schema)
+**Note (Phase 2)**: This benchmarking tool has been refined to focus on **timing and automated metrics only**. Scoring dimensions (C, R, D, E, S, K) are no longer used in comparison reports. The focus is on:
+- **Timing metrics**: API generation time, UI generation time
+- **Test iterations**: Number of times tests were run before all passed
+- **LLM usage**: Token counts, request counts, estimated costs (if available)
+- **Build success**: Whether UI builds and runs without errors (automated check)
+
+**Source of truth** for metrics:
+- `docs/Benchmarking_Method.md` (metrics M-01..M-11, M-06a, M-11a)
 
 ## Non-negotiable rules (Normative)
-- **Evidence-first**: If required evidence is missing, record the value as **Unknown**. Do not infer or “best guess”.
-- **No overreach**: Overreach incidents (`NOR-*` violations or features beyond `REQ-*`) MUST be penalized per `docs/Benchmarking_Method.md`.
-- **Two-run requirement**: Final tool scores are based on **Run 1 and Run 2**; if Run 2 is missing/Unknown, the overall score is **Unknown** (except Speed may remain Unknown until cohort exists, per `docs/Benchmarking_Method.md`).
+- **Evidence-first**: If required evidence is missing, record the value as **Unknown**. Do not infer or "best guess".
+- **Timing focus**: Comparison reports focus on timing metrics and test iterations, not subjective scoring.
+- **Automated metrics only**: Only metrics that can be measured automatically are included in comparison reports.
 
 ## Inputs required to score (Operator checklist)
 You must have:

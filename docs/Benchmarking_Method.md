@@ -171,12 +171,22 @@ Each run MUST record the following metrics.
 #### M-06: Acceptance pass rate (Model A or Model B)
 - **What it measures**: Correctness against `docs/Acceptance_Criteria.md` for the selected model.
 - **How to measure**:
-  - Create an “Acceptance Checklist” derived directly from `docs/Acceptance_Criteria.md` for the selected model.
+  - Create an "Acceptance Checklist" derived directly from `docs/Acceptance_Criteria.md` for the selected model.
   - Record each criterion as Pass/Fail/Not-Run with notes and evidence references.
   - Compute pass rate as: \( \text{PassRate} = \frac{\#Pass}{\#Pass + \#Fail} \) (exclude Not-Run).
 - **Required evidence**:
   - completed checklist mapping each checked item to its `AC-*` ID
   - API outputs/logs/screenshots sufficient to verify each pass/fail outcome
+
+#### M-06a: Test run iterations
+- **What it measures**: Number of times automated tests were run before all tests passed.
+- **How to measure**:
+  - Track each test run iteration with begin/end timestamps
+  - Record pass rate for each iteration
+  - Count total iterations until all tests pass
+- **Required evidence**:
+  - AI run report with `test_run_N_start`, `test_run_N_end`, and results for each iteration
+  - Final `test_iterations_count` value
 
 #### M-07: Overreach incidents (violations of `NOR-*` or beyond `REQ-*`)
 - **What it measures**: Scope control and spec adherence (no extra features).
@@ -218,8 +228,20 @@ Each run MUST record the following metrics.
   - the run instructions as produced by the tool
   - notes on any missing steps, ambiguities, or interactive prompts encountered
 
+#### M-11a: LLM Usage Tracking
+- **What it measures**: Token usage, request counts, and estimated costs for the LLM used during implementation.
+- **How to measure**:
+  - Record input tokens, output tokens, total tokens
+  - Record number of API requests made
+  - Record estimated cost (if available)
+  - Note usage source: `tool_reported`, `operator_estimated`, or `unknown`
+- **Required evidence**:
+  - LLM usage metrics in AI run report (if tool provides them)
+  - Operator notes on how usage was determined (if manually calculated)
+- **Note**: This metric is optional but encouraged. Operators should check their plan usage before and after runs to determine actual costs.
+
 #### Metric Recording Minimums (Normative)
-- Every run record MUST include M-01..M-11.
+- Every run record MUST include M-01..M-11, M-06a (test iterations), and M-11a (LLM usage, if available).
 - If a metric cannot be measured, record **Unknown** and explain what evidence was missing.
 
 ### Overall scoring formula + comparison table schema

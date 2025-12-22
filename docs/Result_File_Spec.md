@@ -41,28 +41,35 @@ Result files MUST be JSON (`.json`) files containing structured data.
       "clarifications_count": "number or 'Unknown'",
       "interventions_count": "number or 'Unknown'",
       "reruns_count": "number or 'Unknown'",
+      "test_runs": [
+        {
+          "run_number": "integer",
+          "start_timestamp": "ISO-8601 string",
+          "end_timestamp": "ISO-8601 string",
+          "duration_minutes": "number",
+          "total_tests": "integer",
+          "passed": "integer",
+          "failed": "integer",
+          "pass_rate": "number (0.0-1.0)"
+        }
+      ],
+      "test_iterations_count": "integer",
+      "llm_usage": {
+        "input_tokens": "integer or null",
+        "output_tokens": "integer or null",
+        "total_tokens": "integer or null",
+        "requests_count": "integer or null",
+        "estimated_cost_usd": "number or null",
+        "cost_currency": "string (default: USD)",
+        "usage_source": "tool_reported|operator_estimated|unknown"
+      },
       "acceptance": {
         "model": "A",
         "pass_count": "number or 'Unknown'",
         "fail_count": "number or 'Unknown'",
         "not_run_count": "number or 'Unknown'",
         "passrate": "number or 'Unknown'"
-      },
-      "determinism_compliance": "Pass|Fail|Unknown",
-      "overreach_incidents_count": "number or 'Unknown'",
-      "contract_completeness_passrate": "number or 'Unknown'",
-      "instructions_quality_rating": "100|70|40|0|Unknown",
-      "reproducibility_rating": "None|Minor|Major|Unknown"
-    },
-    "scores": {
-      "correctness_C": "number or 'Unknown'",
-      "reproducibility_R": "number or 'Unknown'",
-      "determinism_D": "number or 'Unknown'",
-      "effort_E": "number or 'Unknown'",
-      "speed_S": "number or 'Unknown'",
-      "contract_docs_K": "number or 'Unknown'",
-      "penalty_overreach_PO": "number or 'Unknown'",
-      "overall_score": "number or 'Unknown'"
+      }
     },
     "artifacts": {
       "tool_transcript_path": "string",
@@ -129,13 +136,13 @@ All fields in `result_data.artifacts` are required. Paths MUST be relative to th
 
 ## Notes
 
-Result files are JSON-only for maximum automation. For human-readable reports, see the generated comparison reports in `results/compiled/`.
+Result files are JSON-only for maximum automation. For human-readable reports, see the generated comparison reports in `pawmate-ai-results/results/compiled/` (generated after submitting result files to the results repository).
 
 ## Validation Rules
 
 ### Format Validation
 1. File MUST be valid JSON
-2. File MUST validate against JSON schema (`results/schemas/result-schema-v1.0.json`)
+2. File MUST validate against JSON schema (`pawmate-ai-results/schemas/result-schema-v2.0-proposed.json`)
 3. All required fields MUST be present
 4. Field types MUST match specification
 5. Enum values MUST be from allowed sets

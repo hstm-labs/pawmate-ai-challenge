@@ -108,8 +108,8 @@ Instead of a single flat `metrics` object, separate implementations into indepen
 ## Implementation Example
 
 See:
-- `results/submitted/cursor_modelA_REST_run1_20251218T1407_v2.json` (example with both API and UI)
-- `results/schemas/result-schema-v2.0-proposed.json` (proposed schema)
+- `pawmate-ai-results/results/submitted/cursor_modelA_REST_run1_20251218T1407_v2.json` (example with both API and UI)
+- `pawmate-ai-results/schemas/result-schema-v2.0-proposed.json` (proposed schema)
 
 ## Data Capture Best Practices
 

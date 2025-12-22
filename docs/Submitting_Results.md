@@ -25,8 +25,9 @@ cd /path/to/pawmate-ai-challenge
 This script:
 - Reads your `run.config` file
 - Extracts metrics from your AI run report (if available)
-- Generates a standardized result file in `results/submitted/`
+- Generates a standardized result file (defaults to current directory)
 - Names the file according to the convention: `{tool-slug}_{model}_{api-type}_{run-number}_{timestamp}.json`
+- **Note**: Copy the generated file to `pawmate-ai-results/results/submitted/` for processing
 
 **Output**: The script will tell you the path to the generated file and next steps.
 
@@ -65,14 +66,16 @@ The generated file contains placeholders that must be filled in. Open the file a
 
 #### Human-Readable Content
 
-The result file is JSON-only. All information should be captured in the structured JSON fields. For human-readable reports, see the generated comparison reports in `results/compiled/`.
+The result file is JSON-only. All information should be captured in the structured JSON fields. For human-readable reports, see the generated comparison reports in `pawmate-ai-results/results/compiled/` (generated after submitting result files to the results repository).
 
 ### Step 3: Validate Result File
 
 Before submitting, validate your result file:
 
 ```bash
-./scripts/validate_result.sh results/submitted/your-result-file.md
+# Validate using the script in the results repository
+cd /path/to/pawmate-ai-results
+./scripts/validate_result.sh results/submitted/your-result-file.json
 ```
 
 The validator checks:
@@ -88,6 +91,8 @@ The validator checks:
 For strict validation (treats warnings as errors):
 
 ```bash
+# In the results repository
+cd /path/to/pawmate-ai-results
 ./scripts/validate_result.sh results/submitted/your-result-file.json --strict
 ```
 
@@ -97,9 +102,14 @@ For strict validation (treats warnings as errors):
 
 If your AI tool generated the result file automatically:
 
-1. **Review the file** for completeness
-2. **Commit and push**:
+1. **Copy file to results repository**:
    ```bash
+   cp your-result-file.json /path/to/pawmate-ai-results/results/submitted/
+   ```
+
+2. **In the results repository, review and commit**:
+   ```bash
+   cd /path/to/pawmate-ai-results
    git add results/submitted/your-result-file.json
    git commit -m "Add benchmark result: ToolName Model A REST Run 1"
    git push origin HEAD
@@ -108,12 +118,18 @@ If your AI tool generated the result file automatically:
 
 #### Option B: Manual Submission
 
-1. **Create a branch**:
+1. **Copy file to results repository**:
    ```bash
+   cp your-result-file.json /path/to/pawmate-ai-results/results/submitted/
+   ```
+
+2. **In the results repository, create a branch**:
+   ```bash
+   cd /path/to/pawmate-ai-results
    git checkout -b submit-results-toolname-modelA-run1
    ```
 
-2. **Add and commit**:
+3. **Add and commit**:
    ```bash
    git add results/submitted/your-result-file.json
    git commit -m "Add benchmark result: ToolName Model A REST Run 1"
@@ -144,11 +160,17 @@ When you create a PR with result files:
 
 ### Automatic Compilation
 
-After your PR is merged:
-- GitHub Actions runs `compile-results.yml`
+After your PR is merged to the `pawmate-ai-results` repository:
+- GitHub Actions runs `compile-results.yml` (if configured)
 - Aggregates all results by spec version, model, and API type
 - Generates comparison reports in `results/compiled/`
 - Commits reports back to the repository
+
+Alternatively, you can generate reports locally:
+```bash
+cd /path/to/pawmate-ai-results
+python3 scripts/aggregate_results.py --input-dir results/submitted --output-dir results/compiled
+```
 
 ### Comparison Reports
 

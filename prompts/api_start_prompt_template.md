@@ -176,9 +176,23 @@ You MUST produce a single comparison-ready document at `{Workspace Path}/benchma
   - `build_clean`: When the build succeeds with no errors
   - `seed_loaded`: When seed data is loaded and verified
   - `app_started`: When **you start the API/application process** with no errors **and verify it responds** (e.g., health check) as part of your own run workflow
-  - `tests_run_N`: Each test run attempt with pass percentage (e.g., `tests_run_1: 2024-12-17T10:30:00Z (85% pass)`)
-  - `all_tests_pass`: When all tests pass
-- **Test summary**: Total tests, passed, failed, and final pass rate
+  - `test_run_N_start`: Begin timestamp for each test run iteration (e.g., `test_run_1_start: 2024-12-17T10:30:00.000Z`)
+  - `test_run_N_end`: End timestamp for each test run iteration (e.g., `test_run_1_end: 2024-12-17T10:32:15.000Z`)
+  - `test_run_N_total`: Total number of tests in that run
+  - `test_run_N_passed`: Number of tests that passed
+  - `test_run_N_failed`: Number of tests that failed
+  - `test_run_N_pass_rate`: Pass rate as decimal (0.0 to 1.0, e.g., 0.85 for 85%)
+  - `all_tests_pass`: When all tests pass (timestamp of final successful test run)
+- **Test summary**: Total tests, passed, failed, and final pass rate (from the last test run)
+- **Test iterations**: Count of how many times tests were run before all passed
+- **LLM Usage** (if available from tool):
+  - `input_tokens`: Total input tokens used
+  - `output_tokens`: Total output tokens used
+  - `total_tokens`: Sum of input and output tokens
+  - `requests_count`: Number of API requests made
+  - `estimated_cost_usd`: Estimated cost in USD (if calculable)
+  - `cost_currency`: Currency code (default: USD)
+  - `usage_source`: Source of data (`tool_reported`, `operator_estimated`, or `unknown`)
 - **Artifact paths**: Paths to contract, run instructions, acceptance checklist, and evidence folders
 
 This report enables direct comparison between different AI tool runs.
@@ -210,11 +224,18 @@ After generating all code, you MUST execute the following loop-until-green workf
 5. **Leave the API running** — do NOT stop it after tests pass
 
 #### 5.4 Test Loop
-1. Run all automated tests
-2. Record the pass percentage in the AI run report
-3. If any tests fail, analyze failures, fix issues, and re-run tests
-4. Repeat until all tests pass
-5. Record timestamp for `all_tests_pass`
+1. Record `test_run_N_start` timestamp (where N is the iteration number, starting at 1)
+2. Run all automated tests
+3. Record `test_run_N_end` timestamp
+4. Record test results:
+   - `test_run_N_total`: Total number of tests
+   - `test_run_N_passed`: Number of tests that passed
+   - `test_run_N_failed`: Number of tests that failed
+   - `test_run_N_pass_rate`: Calculate as `passed / (passed + failed)` (decimal 0.0 to 1.0)
+5. If any tests fail, analyze failures, fix issues, and increment N for the next iteration
+6. Repeat steps 1-5 until all tests pass
+7. Record timestamp for `all_tests_pass` (same as the final `test_run_N_end`)
+8. Record `test_iterations`: The total number of test runs (value of N when all passed)
 
 Update `benchmark/acceptance_checklist.md` to mark each `AC-*` item as passing once verified by tests.
 
@@ -261,6 +282,40 @@ At the end of this run:
 
 ---
 
+### 9) LLM Usage Tracking (MUST)
+**IMPORTANT — Operator Action Required:**
+
+Before completing this run, you MUST prompt the operator to check their LLM usage/plan status. The operator needs to record their usage metrics to compare before and after the run.
+
+**For the operator:**
+1. **Check your current LLM usage/billing status NOW** (before the run completes)
+2. After the run completes, check again to determine the usage for this run
+3. Record the usage metrics in the AI run report if available from your tool
+
+**Tool-specific usage checking instructions:**
+- **Cursor**: Check Cursor Settings → Usage/Billing, or visit the Cursor dashboard/account page
+- **GitHub Copilot**: Check GitHub Settings → Copilot → Usage, or GitHub account billing page
+- **Codeium**: Check Codeium dashboard or account settings for usage metrics
+- **Other tools**: Check your tool's billing/usage dashboard or account settings page
+
+**If usage metrics are available from the tool**, include them in the AI run report under the "LLM Usage" section. If not available, note this in the report and the operator will need to estimate or record manually.
+
+**Completion prompt to display:**
+```
+⚠️  LLM USAGE TRACKING REQUIRED
+
+Before marking this run as complete, please:
+1. Check your current LLM plan usage/billing status
+2. Note the current token/request counts or cost
+3. After completion, check again to calculate the difference
+4. Record usage metrics in the AI run report if available
+
+Tool: [Detected tool name]
+Check usage at: [Tool-specific instructions based on detected tool]
+```
+
+---
+
 ### 8.5) Automated Results Submission (MUST)
 Upon completion of the implementation and all verification steps, you MUST generate a standardized result file for submission.
 
@@ -274,7 +329,8 @@ cd {Spec Root}
 This script will:
 - Extract metrics from your AI run report
 - Parse run configuration
-- Generate a standardized result file in `results/submitted/`
+- Generate a standardized result file (defaults to current directory)
+- **Note**: The result file should be copied to `pawmate-ai-results/results/submitted/` for processing
 
 #### 8.5.2 Complete Result File
 The generated result file will contain placeholders for metrics that must be manually completed. You MUST:
@@ -288,18 +344,20 @@ The generated result file will contain placeholders for metrics that must be man
 3. Calculate scores using `docs/Scoring_Rubric.md` (if sufficient data is available)
 
 #### 8.5.3 Validate Result File
-Before submission, validate the result file:
+Before submission, validate the result file (in the results repository):
 ```bash
-./scripts/validate_result.sh results/submitted/{generated-filename}.md
+cd /path/to/pawmate-ai-results
+./scripts/validate_result.sh results/submitted/{generated-filename}.json
 ```
 
 Fix any validation errors before proceeding.
 
 #### 8.5.4 Submit Result File
 After validation passes, the result file is ready for submission. The operator will:
-1. Review the result file for completeness
-2. Commit it to git: `git add results/submitted/{filename}.md`
-3. Create a pull request to submit the results
+1. Copy the result file to `pawmate-ai-results/results/submitted/`
+2. Review the result file for completeness
+3. In the results repository, commit it: `git add results/submitted/{filename}.json`
+4. Create a pull request to submit the results
 
 **Note**: If you cannot execute the generation script (e.g., no shell access), create the result file manually using `results/result_template.json` as a template, following `docs/Result_File_Spec.md` for the exact format.
 

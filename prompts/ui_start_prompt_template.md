@@ -160,11 +160,24 @@ If you cannot make instructions fully non-interactive, record a clearly labeled 
 ---
 
 ### 6) Reporting Format (MUST)
-At completion, output a "UI Run Summary" with:
-- Confirmation that UI integrates with existing backend
+At completion, output a "UI Run Summary" at `{Workspace Path}/benchmark/ui_run_summary.md` that includes:
+- **Timestamps** (**ISO-8601 UTC with milliseconds**, e.g. `2025-12-17T22:59:33.123Z`):
+  - `ui_generation_started`: When you began generating UI code
+  - `ui_code_complete`: When all UI files have been written
+  - `ui_build_success`: When the UI builds successfully with no errors
+  - `ui_running`: When the UI is running and accessible (no runtime errors)
+- **Build success**: Confirmation that UI builds and runs without errors (boolean: true/false)
 - UI technology stack used
 - List of any assumptions (`ASM-*`)
 - List of any backend changes made (if any)
+- **LLM Usage** (if available from tool):
+  - `input_tokens`: Total input tokens used
+  - `output_tokens`: Total output tokens used
+  - `total_tokens`: Sum of input and output tokens
+  - `requests_count`: Number of API requests made
+  - `estimated_cost_usd`: Estimated cost in USD (if calculable)
+  - `cost_currency`: Currency code (default: USD)
+  - `usage_source`: Source of data (`tool_reported`, `operator_estimated`, or `unknown`)
 - Paths to:
   - UI source folder
   - Updated run instructions
@@ -174,10 +187,13 @@ At completion, output a "UI Run Summary" with:
 ### 7) Final State (MUST)
 At the end of this run:
 - The **UI MUST be running** and accessible
-- The UI MUST successfully communicate with the backend API
+- The **UI MUST build successfully** with no errors (`ui_build_success` = true)
+- The **UI MUST run without runtime errors** (`ui_running` = true)
 - Provide a **clickable URL** to access the UI (e.g., `http://localhost:5173`)
 
 **IMPORTANT:** The user will click the URL to open the UI in their browser. Make sure both backend and UI are running before providing the final URL.
+
+**Note:** We do not evaluate UI correctness or UX quality automatically. The build success check only verifies that the UI compiles and runs without errors.
 
 ---
 
@@ -206,7 +222,41 @@ Follow the same validation and submission steps as in the API prompt (section 8.
 
 ---
 
-### 8) Start Now
+### 8) LLM Usage Tracking (MUST)
+**IMPORTANT — Operator Action Required:**
+
+Before completing this run, you MUST prompt the operator to check their LLM usage/plan status. The operator needs to record their usage metrics to compare before and after the run.
+
+**For the operator:**
+1. **Check your current LLM usage/billing status NOW** (before the UI run completes)
+2. After the run completes, check again to determine the usage for this run
+3. Record the usage metrics in the UI run summary if available from your tool
+
+**Tool-specific usage checking instructions:**
+- **Cursor**: Check Cursor Settings → Usage/Billing, or visit the Cursor dashboard/account page
+- **GitHub Copilot**: Check GitHub Settings → Copilot → Usage, or GitHub account billing page
+- **Codeium**: Check Codeium dashboard or account settings for usage metrics
+- **Other tools**: Check your tool's billing/usage dashboard or account settings page
+
+**If usage metrics are available from the tool**, include them in the UI run summary under the "LLM Usage" section. If not available, note this in the summary and the operator will need to estimate or record manually.
+
+**Completion prompt to display:**
+```
+⚠️  LLM USAGE TRACKING REQUIRED
+
+Before marking this UI run as complete, please:
+1. Check your current LLM plan usage/billing status
+2. Note the current token/request counts or cost
+3. After completion, check again to calculate the difference
+4. Record usage metrics in the UI run summary if available
+
+Tool: [Detected tool name]
+Check usage at: [Tool-specific instructions based on detected tool]
+```
+
+---
+
+### 9) Start Now
 **YOUR VERY FIRST OUTPUT must include the `ui_generation_started` timestamp (ISO-8601 UTC with milliseconds):**
 
 ```

@@ -249,8 +249,10 @@ cd "$REPO_ROOT"
 ./scripts/generate_result_file.sh --run-dir "$RUN_DIR"
 \`\`\`
 
-This will create a standardized result file in \`results/submitted/\` with a name like:
+This will create a standardized result file (defaults to current directory) with a name like:
 \`${TOOL_SLUG}_model${model}_${api_type}_run${RUN_NUMBER}_${TIMESTAMP}.json\`
+
+**Note**: Copy the generated file to \`pawmate-ai-results/results/submitted/\` for processing.
 
 ### Step 2: Complete Result File
 The generated file will contain placeholders for metrics that must be filled in. Review the file and:
@@ -261,21 +263,30 @@ The generated file will contain placeholders for metrics that must be filled in.
 4. Rate instructions quality (100/70/40/0)
 5. Calculate scores using \`docs/Scoring_Rubric.md\`
 
-### Step 3: Validate Result File
-Before submitting, validate the result file:
+### Step 3: Copy to Results Repository
+Copy the generated result file to the results repository:
 
 \`\`\`bash
-./scripts/validate_result.sh results/submitted/{generated-filename}.md
+cp {generated-filename}.json /path/to/pawmate-ai-results/results/submitted/
+\`\`\`
+
+### Step 4: Validate Result File
+Before submitting, validate the result file (in the results repository):
+
+\`\`\`bash
+cd /path/to/pawmate-ai-results
+./scripts/validate_result.sh results/submitted/{generated-filename}.json
 \`\`\`
 
 Fix any validation errors before proceeding.
 
-### Step 4: Submit via Git
-Once validation passes:
+### Step 5: Submit via Git
+Once validation passes (in the results repository):
 
 \`\`\`bash
+cd /path/to/pawmate-ai-results
 # Add the result file
-git add results/submitted/{generated-filename}.md
+git add results/submitted/{generated-filename}.json
 
 # Commit
 git commit -m "Add benchmark result: ${TOOL} Model ${model} ${api_type} Run ${RUN_NUMBER}"
