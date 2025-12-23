@@ -237,7 +237,7 @@ cat > "$RUN_DIR/result_submission_instructions.md" <<EOF
 # Result Submission Instructions
 
 ## Overview
-After completing your benchmark run (API and optionally UI), you need to generate and submit a standardized result file.
+After completing your benchmark run (API and optionally UI), you need to generate and submit a standardized result file containing automated timing metrics and build status.
 
 ## Automated Generation
 
@@ -254,23 +254,48 @@ This will create a standardized result file (defaults to current directory) with
 
 **Note**: Copy the generated file to \`pawmate-ai-results/results/submitted/\` for processing.
 
-### Step 2: Complete Result File
-The generated file will contain placeholders for metrics that must be filled in. Review the file and:
+### Step 2: Verify Automated Metrics
+The generation script extracts metrics from your run summary files:
 
-1. Extract acceptance criteria results from your run
-2. Fill in determinism compliance status
-3. Calculate contract completeness passrate
-4. Rate instructions quality (100/70/40/0)
-5. Calculate scores using \`docs/Scoring_Rubric.md\`
+**From \`benchmark/ai_run_report.md\` or \`benchmark/RUN_SUMMARY.md\`:**
+- \`generation_started\` - When code generation began
+- \`code_complete\` - When all code files were written
+- \`build_clean\` - When build completed successfully
+- \`seed_loaded\` - When seed data was loaded
+- \`app_started\` - When application started running
+- \`all_tests_pass\` - When all tests passed (or final test timestamp)
+- Test iteration count and pass rates
 
-### Step 3: Copy to Results Repository
+**From \`benchmark/ui_run_summary.md\` (if UI was built):**
+- \`ui_generation_started\` - When UI code generation began
+- \`ui_code_complete\` - When all UI files were written
+- \`ui_build_success\` - Boolean indicating successful UI build
+- \`ui_running\` - When UI became accessible
+
+**LLM Usage Metrics (if available):**
+- \`input_tokens\` - Total input tokens consumed
+- \`output_tokens\` - Total output tokens generated
+- \`total_tokens\` - Sum of input and output
+- \`requests_count\` - Number of LLM API calls
+- \`estimated_cost_usd\` - Estimated cost in USD
+
+### Step 3: Review Generated Metrics
+Verify the extracted metrics are accurate:
+
+\`\`\`bash
+cat {generated-filename}.json | jq '.timing_metrics'
+cat {generated-filename}.json | jq '.build_status'
+cat {generated-filename}.json | jq '.llm_usage'
+\`\`\`
+
+### Step 4: Copy to Results Repository
 Copy the generated result file to the results repository:
 
 \`\`\`bash
 cp {generated-filename}.json /path/to/pawmate-ai-results/results/submitted/
 \`\`\`
 
-### Step 4: Validate Result File
+### Step 5: Validate Result File
 Before submitting, validate the result file (in the results repository):
 
 \`\`\`bash
@@ -280,7 +305,7 @@ cd /path/to/pawmate-ai-results
 
 Fix any validation errors before proceeding.
 
-### Step 5: Submit via Git
+### Step 6: Submit via Git
 Once validation passes (in the results repository):
 
 \`\`\`bash
@@ -296,22 +321,70 @@ git push origin HEAD
 # Then create a PR on GitHub
 \`\`\`
 
+## Key Metrics Tracked
+
+### Timing Metrics (all in ISO-8601 UTC with milliseconds)
+- **Time to First Code (TTFC)**: \`generation_started\` to \`code_complete\`
+- **Time to Build Success**: \`code_complete\` to \`build_clean\`
+- **Time to Running**: \`generation_started\` to \`app_started\`
+- **Time to All Tests Pass**: \`generation_started\` to \`all_tests_pass\`
+- **UI Time to First Code**: \`ui_generation_started\` to \`ui_code_complete\`
+- **UI Time to Running**: \`ui_generation_started\` to \`ui_running\`
+
+### Build Status (boolean flags)
+- \`build_success\` - Whether API built without errors
+- \`tests_pass\` - Whether automated tests passed
+- \`ui_build_success\` - Whether UI built without errors
+- \`ui_running\` - Whether UI runs without runtime errors
+
+### Iteration Metrics
+- \`test_iterations\` - Number of test/fix cycles to reach passing state
+- \`test_passrate_final\` - Final test pass rate (e.g., "20/20" or "100%")
+
+### Optional Quality Indicators
+If collected during run:
+- Assumption count (\`ASM-*\` items)
+- Backend changes made for UI integration
+- CORS or other integration fixes required
+
 ## Manual Generation (if script unavailable)
 
 If you cannot run the generation script, create the result file manually:
 
-1. Copy \`results/result_template.json\` as a starting point
-2. Follow \`docs/Result_File_Spec.md\` for the exact format
-3. Fill in all required fields
-4. Ensure the filename follows the naming convention
-5. Validate JSON syntax before submitting
+1. Extract timestamps from \`benchmark/ai_run_report.md\` and \`benchmark/ui_run_summary.md\`
+2. Follow \`docs/Result_File_Spec.md\` for the exact JSON format
+3. Ensure all timestamps are in ISO-8601 UTC with milliseconds format
+4. Set boolean flags based on build/test outcomes
+5. Ensure the filename follows the naming convention
+6. Validate JSON syntax before submitting
+
+## Important Notes
+
+**Focus on Automated Metrics**: This benchmarking framework prioritizes:
+- ⏱️ Objective timing measurements (not subjective quality ratings)
+- ✅ Binary build/test success indicators (not manual inspection scores)
+- 🔢 Quantitative iteration counts (not qualitative assessments)
+- 📊 LLM token usage metrics (when available from tool)
+
+**What NOT to Include**:
+- ❌ Manual quality ratings or scores
+- ❌ Subjective assessments of code quality
+- ❌ Human-assigned compliance grades
+- ❌ Acceptance criteria manual test results
+
+**What TO Include**:
+- ✅ Exact timestamps for all milestones
+- ✅ Build success/failure boolean flags
+- ✅ Test pass/fail counts from automated tests
+- ✅ Iteration counts to reach passing state
+- ✅ LLM usage metrics if available from tool
 
 ## Resources
 
-- \`docs/Result_File_Spec.md\` - Complete specification
-- \`docs/Scoring_Rubric.md\` - Score calculation rules
+- \`docs/Result_File_Spec.md\` - Complete result file format specification
 - \`docs/Submitting_Results.md\` - Detailed submission guide
-- \`results/result_template.md\` - Template file
+- \`benchmark/ai_run_report.md\` - API timing data source
+- \`benchmark/ui_run_summary.md\` - UI timing data source (if applicable)
 
 ## Run Information
 
