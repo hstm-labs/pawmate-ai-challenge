@@ -60,7 +60,11 @@ The PawMate Benchmarking Tool has been enhanced with comprehensive cross-platfor
 
 ## Implementation Details
 
-### 1. Environment Verification (`scripts/verify_environment.sh`)
+### 1. Environment Verification Scripts
+
+**Files:**
+- `scripts/verify_environment.sh` - For macOS/Linux
+- `scripts/verify_environment.ps1` - For Windows (PowerShell)
 
 **Purpose:** Pre-flight check before running any benchmarks
 
@@ -73,8 +77,15 @@ The PawMate Benchmarking Tool has been enhanced with comprehensive cross-platfor
 - ✅ Color-coded output (✓ green, ✗ red, ! yellow)
 
 **Usage:**
+
+macOS/Linux:
 ```bash
 ./scripts/verify_environment.sh
+```
+
+Windows (PowerShell):
+```powershell
+.\scripts\verify_environment.ps1
 ```
 
 **Output Example:**
@@ -282,12 +293,15 @@ git clone https://github.com/yourorg/pawmate-ai-challenge.git
 cd pawmate-ai-challenge
 
 # 2. Verify environment
+# macOS/Linux:
 ./scripts/verify_environment.sh
+# Windows:
+# .\scripts\verify_environment.ps1
 
 # 3. If errors, see Setup_Instructions.md
 # Install Node.js for your platform
 
-# 4. Re-verify
+# 4. Re-verify (use appropriate script for your platform)
 ./scripts/verify_environment.sh
 
 # 5. Start benchmarking!
@@ -319,13 +333,15 @@ When generating implementations, AI tools should:
 - Run `source ~/.bashrc` or `source ~/.zshrc`
 - Or restart terminal
 
-### Issue: "permission denied" on scripts
+### Issue: "permission denied" on scripts (macOS/Linux)
 
 **Solution:**
 ```bash
 chmod +x startup.sh shutdown.sh
 chmod +x scripts/verify_environment.sh
 ```
+
+**Note:** Windows users with PowerShell scripts (.ps1) should not encounter this issue.
 
 ### Issue: Old Node.js version
 

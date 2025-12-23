@@ -188,10 +188,17 @@ sudo dnf install -y nodejs  # or 'yum' on older systems
 
 After installing Node.js, run the environment verification script:
 
+**macOS / Linux:**
 ```bash
 cd pawmate-ai-challenge
 chmod +x scripts/verify_environment.sh
 ./scripts/verify_environment.sh
+```
+
+**Windows (PowerShell):**
+```powershell
+cd pawmate-ai-challenge
+.\scripts\verify_environment.ps1
 ```
 
 Expected output:
@@ -266,7 +273,8 @@ pawmate-ai-challenge/
 ├── runs/                 # Benchmark run outputs
 ├── scripts/              # Utility scripts
 │   ├── initialize_run.sh
-│   └── verify_environment.sh
+│   ├── verify_environment.sh   # For macOS/Linux
+│   └── verify_environment.ps1  # For Windows
 └── README.md
 ```
 
@@ -274,8 +282,10 @@ pawmate-ai-challenge/
 
 ## Next Steps
 
-1. **Verify your environment**: Run `./scripts/verify_environment.sh`
-2. **Read the main README**: `cat README.md`
+1. **Verify your environment**: 
+   - macOS/Linux: `./scripts/verify_environment.sh`
+   - Windows: `.\scripts\verify_environment.ps1`
+2. **Read the main README**: `cat README.md` (or `type README.md` on Windows)
 3. **Initialize your first run**: `./scripts/initialize_run.sh --profile model-a-rest --tool "YourTool" --tool-ver "1.0"`
 4. **Follow the prompts**: Use the generated prompts in `runs/*/start_build_api_prompt.txt`
 
@@ -351,7 +361,7 @@ If you encounter issues not covered here:
 3. Open an issue in the repository with:
    - Your operating system and version
    - Node.js version (`node --version`)
-   - Output of `./scripts/verify_environment.sh`
+   - Output of verification script (`verify_environment.sh` or `verify_environment.ps1`)
    - The error message you're seeing
 
 ---

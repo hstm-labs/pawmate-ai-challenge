@@ -118,8 +118,11 @@ Updated all benchmarking documentation to emphasize **PowerShell as the primary 
 
 ### 3. Scripts and Tools
 
-#### `scripts/verify_environment.sh`
-**Changes:**
+#### `scripts/verify_environment.sh` and `scripts/verify_environment.ps1`
+
+**New File Created:** `scripts/verify_environment.ps1` - Native PowerShell version of the environment verification script.
+
+**Changes to `verify_environment.sh`:**
 - Removed "Running in WSL (recommended for Windows)" message
 - Changed Git Bash detection to recommend PowerShell instead of WSL
 - Updated warning message: "For best Windows experience, use PowerShell with .ps1 scripts"
@@ -139,6 +142,14 @@ echo "! Running in Git Bash/Cygwin"
 echo "! For best Windows experience, use PowerShell with .ps1 scripts"
 ```
 
+**New PowerShell Script Features:**
+- ✅ Checks Node.js, npm, curl (or Invoke-WebRequest)
+- ✅ Validates Node.js version (>= 18.x)
+- ✅ Validates npm version (>= 8.x)
+- ✅ Shows PowerShell version information
+- ✅ Color-coded output (Green ✓, Red ✗, Yellow !)
+- ✅ Exit codes (0 = success, 1 = failure)
+
 ---
 
 ## Summary of Changes
@@ -154,6 +165,7 @@ echo "! For best Windows experience, use PowerShell with .ps1 scripts"
 4. ✅ `README.md`
 5. ✅ `QUICK_START_CHECKLIST.md`
 6. ✅ `scripts/verify_environment.sh`
+7. ✅ `scripts/verify_environment.ps1` (NEW - created for Windows)
 
 ### Key Messaging Changes
 

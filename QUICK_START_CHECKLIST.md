@@ -6,9 +6,16 @@ Before running your first benchmark, complete these steps:
 
 ### 1. Verify Your Environment
 
+**macOS / Linux:**
 ```bash
 cd pawmate-ai-challenge
 ./scripts/verify_environment.sh
+```
+
+**Windows (PowerShell):**
+```powershell
+cd pawmate-ai-challenge
+.\scripts\verify_environment.ps1
 ```
 
 **✓ Expected:** All required tools show green checkmarks  
@@ -97,10 +104,10 @@ git clone https://github.com/yourorg/pawmate-ai-challenge.git
 cd pawmate-ai-challenge
 
 # 3. Verify environment
-# Run in Git Bash or use bash script verification tool
-./scripts/verify_environment.sh
+.\scripts\verify_environment.ps1
 
-# 4. Initialize run (Git Bash may be needed for initialization script)
+# 4. Initialize run (Note: initialization script is bash, may need Git Bash for this step)
+# In Git Bash:
 ./scripts/initialize_run.sh --profile model-a-rest --tool "YourTool" --tool-ver "1.0"
 
 # 5. Follow prompts, then start services with PowerShell
@@ -108,7 +115,7 @@ cd runs\*\PawMate
 .\startup.ps1
 ```
 
-**Note:** PowerShell is native to Windows and provides full compatibility. Use the `.ps1` scripts for starting/stopping services.
+**Note:** PowerShell is native to Windows and provides full compatibility. Use the `.ps1` scripts for verification and starting/stopping services.
 
 ---
 

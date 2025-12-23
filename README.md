@@ -39,8 +39,13 @@ Before starting, ensure you have the required tools installed:
 - Linux (apt, yum, or nvm)
 
 **Verify your environment:**
+
 ```bash
+# macOS / Linux
 ./scripts/verify_environment.sh
+
+# Windows (PowerShell)
+.\scripts\verify_environment.ps1
 ```
 
 This will check that you have all required tools and compatible versions.
