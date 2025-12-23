@@ -94,15 +94,16 @@ if command -v node &> /dev/null; then
     fi
 fi
 
-# Check if running on Windows (WSL or Git Bash)
+# Check if running on Windows (Git Bash)
 if [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]] || grep -qi microsoft /proc/version 2>/dev/null; then
     echo ""
     echo "Windows Environment Detected:"
     echo "-----------------------------"
     if grep -qi microsoft /proc/version 2>/dev/null; then
-        echo -e "${GREEN}✓${NC} Running in WSL (recommended for Windows)"
+        echo -e "${GREEN}✓${NC} Running in Linux environment"
     else
-        echo -e "${YELLOW}!${NC} Running in Git Bash/Cygwin (WSL recommended)"
+        echo -e "${YELLOW}!${NC} Running in Git Bash/Cygwin"
+        echo -e "${YELLOW}!${NC} For best Windows experience, use PowerShell with .ps1 scripts"
         WARNINGS=$((WARNINGS + 1))
     fi
 fi

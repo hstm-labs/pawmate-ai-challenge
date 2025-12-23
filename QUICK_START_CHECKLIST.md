@@ -22,7 +22,7 @@ cd pawmate-ai-challenge
 
 **Quick Links by Platform:**
 - **macOS:** [Setup Instructions - macOS](docs/Setup_Instructions.md#macos-setup)
-- **Windows:** [Setup Instructions - Windows](docs/Setup_Instructions.md#windows-setup) ← WSL recommended!
+- **Windows:** [Setup Instructions - Windows](docs/Setup_Instructions.md#windows-setup) ← Use PowerShell!
 - **Linux:** [Setup Instructions - Linux](docs/Setup_Instructions.md#linux-setup)
 
 **Minimum Requirements:**
@@ -87,47 +87,28 @@ cd runs/*/PawMate
 
 ---
 
-### Windows (WSL - Recommended)
-
-```bash
-# 1. Install WSL (if not already)
-# In PowerShell as Administrator:
-wsl --install
-# Restart computer
-
-# 2. In WSL terminal:
-git clone https://github.com/yourorg/pawmate-ai-challenge.git
-cd pawmate-ai-challenge
-
-# 3. Verify (or install Node.js if needed)
-./scripts/verify_environment.sh
-
-# 4. Initialize
-./scripts/initialize_run.sh --profile model-a-rest --tool "YourTool" --tool-ver "1.0"
-
-# 5. Follow prompts, then start services
-cd runs/*/PawMate
-./startup.sh
-```
-
----
-
-### Windows (PowerShell - Alternative)
+### Windows (PowerShell - Recommended)
 
 ```powershell
 # 1. Install Node.js from nodejs.org (if not already)
 
-# 2. Clone
+# 2. Clone repository
 git clone https://github.com/yourorg/pawmate-ai-challenge.git
 cd pawmate-ai-challenge
 
-# 3. Initialize (use Git Bash or WSL for this step)
-# ...
+# 3. Verify environment
+# Run in Git Bash or use bash script verification tool
+./scripts/verify_environment.sh
 
-# 4. Start services with PowerShell
+# 4. Initialize run (Git Bash may be needed for initialization script)
+./scripts/initialize_run.sh --profile model-a-rest --tool "YourTool" --tool-ver "1.0"
+
+# 5. Follow prompts, then start services with PowerShell
 cd runs\*\PawMate
 .\startup.ps1
 ```
+
+**Note:** PowerShell is native to Windows and provides full compatibility. Use the `.ps1` scripts for starting/stopping services.
 
 ---
 
@@ -158,7 +139,7 @@ chmod +x scripts/*.sh
 
 ### Scripts don't work on Windows
 
-→ Use WSL (recommended) or PowerShell scripts (.ps1)
+→ Use PowerShell scripts (.ps1) - native Windows solution
 
 ### Old Node.js version
 
@@ -186,7 +167,7 @@ You're ready to run benchmarks when:
 ## 💡 Tips
 
 1. **Always verify environment first** - saves time later
-2. **Windows users:** WSL is worth the 10-minute setup
+2. **Windows users:** Use PowerShell scripts for native compatibility
 3. **Keep Node.js updated** - use LTS versions (18.x, 20.x)
 4. **Read the spec** - it's detailed for a reason
 5. **Use the startup scripts** - they handle service ordering

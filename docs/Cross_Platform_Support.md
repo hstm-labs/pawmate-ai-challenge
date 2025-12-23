@@ -16,7 +16,7 @@ The PawMate Benchmarking Tool has been enhanced with comprehensive cross-platfor
 5. **Lack of setup documentation**: No clear instructions for different platforms
 
 ### Impact
-- Windows users couldn't participate without WSL knowledge
+- Windows users faced unclear setup guidance
 - New developers faced significant setup friction
 - Benchmark reproducibility was limited to Unix-like systems
 - Operator time wasted troubleshooting environment issues
@@ -38,14 +38,14 @@ The PawMate Benchmarking Tool has been enhanced with comprehensive cross-platfor
 ┌─────────────────────────────────────────────────────────┐
 │ 2. Comprehensive Setup Documentation                    │
 │    - macOS: Homebrew, nvm, direct download              │
-│    - Windows: WSL (recommended), PowerShell              │
+│    - Windows: PowerShell (native), Git Bash (limited)   │
 │    - Linux: apt, yum, nvm                                │
 └─────────────────────────────────────────────────────────┘
                           ↓
 ┌─────────────────────────────────────────────────────────┐
 │ 3. Cross-Platform Scripts                               │
-│    - Unix: startup.sh, shutdown.sh (required)           │
-│    - Windows: startup.ps1, shutdown.ps1 (optional)      │
+│    - Unix: startup.sh, shutdown.sh (macOS/Linux)        │
+│    - Windows: startup.ps1, shutdown.ps1 (PowerShell)    │
 └─────────────────────────────────────────────────────────┘
                           ↓
 ┌─────────────────────────────────────────────────────────┐
@@ -68,7 +68,7 @@ The PawMate Benchmarking Tool has been enhanced with comprehensive cross-platfor
 - ✅ Checks for Node.js, npm, curl
 - ✅ Validates Node.js version (>= 18.x required)
 - ✅ Detects operating system
-- ✅ Identifies WSL vs native Windows
+- ✅ Identifies shell environment
 - ✅ Provides actionable error messages
 - ✅ Color-coded output (✓ green, ✗ red, ! yellow)
 
@@ -107,9 +107,8 @@ Node.js Version Check:
 | Platform | Methods | Compatibility |
 |----------|---------|---------------|
 | **macOS** | Homebrew, nvm, nodejs.org | ✅ Full |
-| **Windows + WSL** | Native Linux in WSL | ✅ Full (recommended) |
+| **Windows + PowerShell** | PowerShell scripts (native) | ✅ Full (recommended) |
 | **Windows + Git Bash** | Git Bash + Node.js | ⚠️ Limited |
-| **Windows + PowerShell** | PowerShell scripts | ✅ Good (with .ps1 scripts) |
 | **Linux (Ubuntu/Debian)** | apt, nvm | ✅ Full |
 | **Linux (Fedora/RHEL)** | dnf/yum, nvm | ✅ Full |
 
@@ -122,9 +121,9 @@ Node.js Version Check:
 
 ### 3. Cross-Platform Scripts
 
-#### Unix Scripts (Required)
+#### Unix Scripts (macOS/Linux)
 
-**`startup.sh`** - Works on macOS, Linux, WSL
+**`startup.sh`** - Works on macOS and Linux
 ```bash
 #!/bin/bash
 # - Calls shutdown.sh for clean state
@@ -134,7 +133,7 @@ Node.js Version Check:
 # - Displays service URLs
 ```
 
-**`shutdown.sh`** - Works on macOS, Linux, WSL
+**`shutdown.sh`** - Works on macOS and Linux
 ```bash
 #!/bin/bash
 # - Stops UI server (port 5173)
@@ -142,7 +141,7 @@ Node.js Version Check:
 # - Handles missing processes gracefully
 ```
 
-#### PowerShell Scripts (Optional)
+#### PowerShell Scripts (Windows)
 
 **`startup.ps1`** - Native Windows support
 - Uses `Start-Process` for background execution
@@ -162,9 +161,9 @@ Node.js Version Check:
 - `REQ-BENCH-0001-A`: Updated to recommend Node.js >= 18.x
 - `REQ-BENCH-0010-A`: MUST provide setup documentation
 - `REQ-PLATFORM-0001-A`: MUST work on Unix-like systems
-- `REQ-PLATFORM-0002-A`: MUST support Windows via WSL or PowerShell
-- `REQ-PLATFORM-0003-A`: Shell scripts MUST work on Unix-like systems
-- `REQ-PLATFORM-0004-A`: PowerShell scripts MAY be provided
+- `REQ-PLATFORM-0002-A`: MUST support Windows via PowerShell scripts
+- `REQ-PLATFORM-0003-A`: Shell scripts MUST work on Unix-like systems (macOS/Linux)
+- `REQ-PLATFORM-0004-A`: PowerShell scripts MUST be provided for Windows
 
 ---
 
@@ -185,36 +184,28 @@ Node.js Version Check:
 
 ---
 
-### Windows + WSL (Full Support ✅)
+### Windows + PowerShell (Full Support ✅)
 
 **Recommended Setup:**
-1. Install WSL 2: `wsl --install` (PowerShell as Administrator)
-2. Restart computer
-3. Inside WSL, follow Linux setup instructions
+1. Install Node.js from nodejs.org
+2. Use PowerShell (pre-installed on Windows)
+3. Use provided PowerShell scripts (`.ps1`)
 
 **Advantages:**
-- Full Unix compatibility
-- All bash scripts work
-- No platform-specific code needed
-- Best Windows experience
-
-**File Access:**
-- Windows drives at `/mnt/c/`, `/mnt/d/`, etc.
-- Recommended: Work in Linux filesystem (`~/`) for performance
+- Native Windows solution
+- No additional tools required
+- PowerShell pre-installed on all modern Windows
+- Native process management
 
 **Compatibility:** 100% - **recommended for Windows users**
 
 ---
 
-### Windows + PowerShell (Good Support ✅)
-
-**Setup:**
-1. Install Node.js from nodejs.org
-2. Use provided PowerShell scripts (`.ps1`)
+### Windows + Git Bash (Limited Support ⚠️)
 
 **Scripts Available:**
-- `startup.ps1` - Starts API and UI servers
-- `shutdown.ps1` - Stops all services
+- `startup.ps1` - Starts API and UI servers with health checks
+- `shutdown.ps1` - Gracefully stops all services
 
 **Usage:**
 ```powershell
@@ -223,12 +214,18 @@ Node.js Version Check:
 .\shutdown.ps1
 ```
 
-**Limitations:**
-- Requires separate `.ps1` scripts
-- Some Unix tools (lsof, pkill) not available
-- Different process management approach
+**Execution Policy:**
+If you encounter execution policy errors, run PowerShell as Administrator:
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
 
-**Compatibility:** 90% - works well with `.ps1` scripts
+**Process Management:**
+- Uses native `Get-NetTCPConnection` to find processes by port
+- Uses `Stop-Process` for graceful shutdown
+- No external tools required
+
+**Compatibility:** 100% - full native Windows support
 
 ---
 
@@ -241,9 +238,10 @@ Node.js Version Check:
 **Limitations:**
 - `lsof` command not available
 - Process management differences
-- Some scripts may not work perfectly
+- Some bash scripts may not work perfectly
+- Not recommended for production use
 
-**Recommendation:** Use WSL instead for full compatibility
+**Recommendation:** Use PowerShell for full Windows compatibility
 
 **Compatibility:** 60% - basic functionality works
 
@@ -348,18 +346,16 @@ sudo apt update && sudo apt upgrade nodejs
 ### Issue: Scripts don't work on Windows
 
 **Solutions (in order of preference):**
-1. **Use WSL** (best compatibility)
-2. **Use PowerShell scripts** (.ps1 files)
-3. **Use Git Bash** (limited compatibility)
+1. **Use PowerShell scripts** (.ps1 files) - native Windows solution
+2. **Use Git Bash** (limited compatibility, not recommended)
 
 ### Issue: "lsof: command not found" in Git Bash
 
 **Explanation:** Git Bash doesn't include lsof
 
 **Solutions:**
-- Use WSL (recommended)
-- Use PowerShell scripts
-- Implement using PowerShell's `Get-NetTCPConnection`
+- Use PowerShell scripts (recommended for Windows)
+- PowerShell uses `Get-NetTCPConnection` for port management
 
 ---
 
@@ -371,14 +367,13 @@ Recommended testing matrix for implementations:
 |----|-------------|--------|----------|
 | macOS 14+ | Native | ✅ Required | High |
 | macOS 13 | Native | ✅ Required | Medium |
-| Windows 11 | WSL 2 | ✅ Required | High |
-| Windows 10 | WSL 2 | ✅ Required | Medium |
-| Windows 11 | PowerShell | ⚠️ Optional | Low |
+| Windows 11 | PowerShell | ✅ Required | High |
+| Windows 10 | PowerShell | ✅ Required | Medium |
 | Ubuntu 22.04 | Native | ✅ Required | Medium |
 | Ubuntu 20.04 | Native | ✅ Required | Low |
 | Fedora Latest | Native | ✅ Optional | Low |
 
-**Minimum Test Coverage:** macOS + Windows (WSL)
+**Minimum Test Coverage:** macOS + Windows (PowerShell)
 
 ---
 
@@ -428,7 +423,7 @@ Recommended testing matrix for implementations:
 - Common issues and solutions included
 
 ✅ **Cross-Platform Scripts**
-- Unix scripts work on macOS, Linux, WSL
+- Unix scripts work on macOS and Linux
 - PowerShell scripts for native Windows
 - Graceful error handling
 
@@ -441,13 +436,13 @@ Recommended testing matrix for implementations:
 
 **Before:**
 - Only macOS/Linux users could easily participate
-- Windows users needed undocumented WSL setup
+- Windows users faced unclear setup guidance
 - Environment issues discovered during benchmarking
 - No verification or setup guidance
 
 **After:**
 - All platforms supported with clear guidance
-- Windows users have multiple options (WSL recommended)
+- Windows users have native PowerShell scripts
 - Environment verified before starting
 - Step-by-step setup instructions available
 
@@ -473,8 +468,8 @@ Recommended testing matrix for implementations:
 → Best development experience
 
 **Windows Users:**
-→ **Strongly recommend WSL 2** for full compatibility  
-→ PowerShell scripts available as alternative  
+→ **Use PowerShell** (native, recommended)  
+→ PowerShell scripts provided (.ps1)  
 → Avoid Git Bash for production benchmarking
 
 **Linux Users:**

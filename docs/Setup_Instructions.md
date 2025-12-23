@@ -76,34 +76,39 @@ The benchmarking tool requires:
 
 ### Windows Setup
 
-#### Recommended: Use WSL 2 (Windows Subsystem for Linux)
+#### Recommended: Use PowerShell (Native Windows)
 
-**Why WSL?** The benchmarking tool uses Unix-style shell scripts. WSL provides the most compatible environment.
+**Why PowerShell?** PowerShell comes pre-installed on all modern Windows systems and provides full compatibility with the benchmarking tool through native `.ps1` scripts.
 
-##### Step 1: Install WSL 2
+##### Step 1: Install Node.js
 
-1. Open PowerShell as Administrator
-2. Run:
+1. **Download Node.js**:
+   - Visit https://nodejs.org/
+   - Download the "LTS" (Long Term Support) version
+   - Run the installer (accept defaults)
+
+2. **Verify installation**:
+   Open PowerShell and run:
    ```powershell
-   wsl --install
+   node --version  # Should show v18.x.x or higher
+   npm --version   # Should show 9.x.x or higher
    ```
-3. Restart your computer
-4. Set up your Linux username and password when prompted
 
-##### Step 2: Install Node.js in WSL
+3. **Use PowerShell scripts**:
+   The implementation includes `.ps1` PowerShell scripts:
+   ```powershell
+   .\startup.ps1   # Start services
+   .\shutdown.ps1  # Stop services
+   ```
 
-Open WSL terminal and follow the **Linux Setup** instructions below.
-
-##### Step 3: Access Windows files from WSL
-
-Your Windows C: drive is available at `/mnt/c/` in WSL:
-```bash
-cd /mnt/c/Users/YourUsername/Documents
+**Note:** You may need to enable script execution. If you see an error about execution policy, run PowerShell as Administrator and execute:
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 ```
 
-#### Alternative: Git Bash + Node.js (Limited Support)
+#### Alternative: Git Bash (Limited Support)
 
-If you cannot use WSL, you can use Git Bash, but some features may not work perfectly:
+If you prefer a Unix-like environment on Windows:
 
 1. **Install Git for Windows** (includes Git Bash):
    - Download from https://git-scm.com/download/win
@@ -120,7 +125,7 @@ If you cannot use WSL, you can use Git Bash, but some features may not work perf
    npm --version
    ```
 
-**Note:** PowerShell scripts are provided for Windows users, but WSL is strongly recommended for full compatibility.
+**Note:** PowerShell scripts provide full native Windows compatibility. Use `.ps1` scripts for starting and stopping services.
 
 ---
 
@@ -240,13 +245,13 @@ sudo apt update
 sudo apt install --only-upgrade nodejs
 ```
 
-### Issue: Windows scripts don't work in PowerShell
+### Issue: Bash scripts don't work in PowerShell
 
-**Solution:** Use WSL (recommended) or Git Bash. See Windows Setup section above.
+**Solution:** Use the PowerShell scripts (`.ps1` files) provided for Windows. They provide full native compatibility.
 
 ### Issue: `lsof: command not found` on Windows/Git Bash
 
-**Solution:** This is expected in Git Bash. Use WSL for full compatibility, or use the PowerShell scripts (when provided).
+**Solution:** This is expected in Git Bash. Use PowerShell scripts (`.ps1`) for full Windows compatibility.
 
 ---
 
@@ -283,16 +288,16 @@ pawmate-ai-challenge/
 - ✅ All shell commands work natively
 - ✅ Recommended platform for development
 
-### Windows + WSL
+### Windows + PowerShell
 - ✅ Full compatibility (recommended for Windows users)
-- ✅ All Linux/Unix commands work
-- ⚠️ Ensure you're working in the Linux filesystem (`~`) for best performance
-- ⚠️ Windows files accessible via `/mnt/c/`
+- ✅ Native Windows solution with `.ps1` scripts
+- ✅ No additional tools required
+- ✅ PowerShell pre-installed on all modern Windows
 
 ### Windows + Git Bash
 - ⚠️ Limited compatibility
 - ⚠️ Some process management commands may not work
-- ⚠️ Use WSL for production benchmarking
+- ⚠️ Use PowerShell scripts for production benchmarking
 
 ### Linux
 - ✅ Full compatibility with all scripts
@@ -332,7 +337,7 @@ sudo apt upgrade nodejs
 
 ### Recommended Terminal
 - **macOS:** iTerm2 or built-in Terminal
-- **Windows:** Windows Terminal (with WSL)
+- **Windows:** Windows Terminal (with PowerShell) or PowerShell ISE
 - **Linux:** GNOME Terminal, Konsole, or your distribution's default
 
 ---
@@ -356,14 +361,14 @@ If you encounter issues not covered here:
 | Platform | Recommended Setup | Compatibility |
 |----------|------------------|---------------|
 | **macOS** | Homebrew or nvm | ✅ Full |
-| **Windows** | WSL 2 | ✅ Full |
+| **Windows** | PowerShell + Node.js | ✅ Full |
 | **Windows** | Git Bash | ⚠️ Limited |
 | **Linux** | Native or nvm | ✅ Full |
 
 **Minimum Requirements:**
 - Node.js >= 18.x
 - npm >= 9.x
-- Unix-like shell environment
+- PowerShell (Windows), Bash (macOS/Linux)
 
-**For best experience:** Use macOS, Linux, or Windows with WSL 2.
+**For best experience:** Use PowerShell on Windows, native terminal on macOS/Linux.
 

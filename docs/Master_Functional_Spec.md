@@ -87,9 +87,9 @@ To ensure reliable and comparable benchmarking results, implementations MUST use
 
 ### Platform Support (Normative)
 - [Model A] REQ-PLATFORM-0001-A Implementations MUST work on Unix-like systems (macOS, Linux).
-- [Model A] REQ-PLATFORM-0002-A Implementations MUST support Windows via WSL (Windows Subsystem for Linux) or provide equivalent PowerShell scripts.
-- [Model A] REQ-PLATFORM-0003-A Shell scripts (`startup.sh`, `shutdown.sh`) MUST work on Unix-like systems.
-- [Model A] REQ-PLATFORM-0004-A PowerShell scripts (`.ps1`) MAY be provided for native Windows support but are not required if WSL support is documented.
+- [Model A] REQ-PLATFORM-0002-A Implementations MUST support Windows via native PowerShell scripts.
+- [Model A] REQ-PLATFORM-0003-A Shell scripts (`startup.sh`, `shutdown.sh`) MUST work on Unix-like systems (macOS, Linux).
+- [Model A] REQ-PLATFORM-0004-A PowerShell scripts (`.ps1`) MUST be provided for native Windows support.
 
 ## Error / Validation Principles
 The system MUST define and consistently apply:
