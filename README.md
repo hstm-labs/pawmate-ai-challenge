@@ -24,9 +24,30 @@ This includes:
 - **Enforced lifecycle + decisions**: state transitions and decision steps are constrained, validated, and auditable.
 - **Determinism**: implementations must support reset-to-seed and deterministic collection ordering for repeatable runs.
 
-## Quick Start (5 steps)
+## Prerequisites
 
-**Prerequisites:** Bash shell (macOS/Linux)
+Before starting, ensure you have the required tools installed:
+
+- **Node.js** version 18 or higher (required for generated implementations)
+- **npm** (comes with Node.js)
+- **Bash shell** (macOS/Linux native, Windows via WSL)
+- **Git** (optional but recommended)
+
+**👉 New to setup?** See **[docs/Setup_Instructions.md](docs/Setup_Instructions.md)** for detailed installation guides for:
+- macOS (Homebrew, nvm, or direct download)
+- Windows (WSL recommended, or PowerShell)
+- Linux (apt, yum, or nvm)
+
+**Verify your environment:**
+```bash
+./scripts/verify_environment.sh
+```
+
+This will check that you have all required tools and compatible versions.
+
+---
+
+## Quick Start (5 steps)
 
 1. **Clone the repo** and open it in your AI coding tool:
    ```bash

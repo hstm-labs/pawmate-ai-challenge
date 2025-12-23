@@ -71,9 +71,10 @@ To ensure reliable and comparable benchmarking results, implementations MUST use
 - **No Containerization**: Docker, Podman, or other container technologies MUST NOT be required
 - **No External Services**: No cloud services, external databases, or third-party APIs MUST be required
 - **Cross-Platform Compatibility**: The implementation MUST run on both macOS and Windows using only `npm install && npm run dev` (or equivalent non-interactive commands)
+- **Node.js Version**: Implementations SHOULD target Node.js LTS version (>= 18.x recommended)
 
 ### Normative Requirements — Tech Stack
-- [Model A] REQ-BENCH-0001-A MUST use Node.js as the backend runtime.
+- [Model A] REQ-BENCH-0001-A MUST use Node.js as the backend runtime (version >= 18.x recommended).
 - [Model A] REQ-BENCH-0002-A MUST use Express as the backend framework.
 - [Model A] REQ-BENCH-0003-A MUST use SQLite as the database (file-based; no separate database server process).
 - [Model A] REQ-BENCH-0004-A MUST use Vite as the frontend build tool.
@@ -82,6 +83,13 @@ To ensure reliable and comparable benchmarking results, implementations MUST use
 - [Model A] REQ-BENCH-0007-A MUST structure the project as separate frontend and backend projects with separate `package.json` files.
 - [Model A] REQ-BENCH-0008-A MUST NOT require Docker or any containerization technology.
 - [Model A] REQ-BENCH-0009-A MUST be runnable on both macOS and Windows using only `npm install && npm run dev` (or documented equivalent non-interactive commands).
+- [Model A] REQ-BENCH-0010-A MUST provide setup documentation including Node.js installation guidance for supported platforms.
+
+### Platform Support (Normative)
+- [Model A] REQ-PLATFORM-0001-A Implementations MUST work on Unix-like systems (macOS, Linux).
+- [Model A] REQ-PLATFORM-0002-A Implementations MUST support Windows via WSL (Windows Subsystem for Linux) or provide equivalent PowerShell scripts.
+- [Model A] REQ-PLATFORM-0003-A Shell scripts (`startup.sh`, `shutdown.sh`) MUST work on Unix-like systems.
+- [Model A] REQ-PLATFORM-0004-A PowerShell scripts (`.ps1`) MAY be provided for native Windows support but are not required if WSL support is documented.
 
 ## Error / Validation Principles
 The system MUST define and consistently apply:
