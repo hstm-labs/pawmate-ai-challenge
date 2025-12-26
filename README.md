@@ -1,44 +1,111 @@
-# PawMate AI Challenge — Docs-Driven Benchmark Spec (Tool-Agnostic)
+# PawMate AI Challenge — Operator Guide
 
-This repository is a **documentation-first benchmarking harness**: a technology-agnostic functional specification and operator templates used to evaluate AI coding tools in a **repeatable, evidence-based** way.
+This repository provides a **standardized benchmarking harness** for evaluating AI coding tools through a repeatable, evidence-based procedure. It contains the frozen specification, initialization scripts, and reporting templates needed to run benchmark experiments.
 
-It is **not** an application implementation repo. It provides the *frozen spec inputs*, constraints, and record-keeping templates that benchmark operators use to run the same target through multiple tools and compare outcomes.
+## What This Repository Is
 
-## Mission statement (benchmark intent)
-PawMate is an ethical pet **adoption management** domain:
-**Helping animals find homes—and people find friends**.
+This is an **operator's toolkit** for running AI benchmarking experiments:
+- **Frozen specification** that AI tools build against
+- **Initialization scripts** that create run folders and generate prompts
+- **Reporting templates** for capturing results and evidence
+- **Comparison framework** for evaluating different AI tools
 
-### Models (what “Model A / Model B” mean)
-- **Model A (Minimum)**: baseline required capability set.
-- **Model B (Full)**: **Model A + additional deltas** (e.g., auth/roles and search), as defined in `docs/Master_Functional_Spec.md`.
+This is **not** an application implementation. The AI tool you're testing will generate the PawMate application during the benchmark run.
 
-This benchmark spec intentionally includes **domain constraints that are mandatory and observable via the API** (these apply to the spec overall, for both **Model A** and **Model B**).
-This includes:
-- **Animal lifecycle state machine (enforced)**: animals are not products; status transitions are constrained and invalid transitions must be rejected.
-- **Decision workflow (multi-step)**: adoption is **submit → evaluate → staff decision**, not “add to cart → checkout”.
-- **Policy enforcement (explicit)**: the contract must define key policies (e.g., single vs multiple active applications) and enforce ethics constraints (e.g., protected-class non-discrimination inputs).
-- **Decision transparency + auditability**: evaluations/decisions require **human-readable explanations** and actions must be recorded as **append-only history events**.
+## Operator Quick Start
 
-### Why this benchmark is non-trivial (high level)
-- **API as system of record**: required behaviors must be observable via API operations and the contract artifact.
-- **Enforced lifecycle + decisions**: state transitions and decision steps are constrained, validated, and auditable.
-- **Determinism**: implementations must support reset-to-seed and deterministic collection ordering for repeatable runs.
+### 1. Initialize a Benchmark Run
 
-## Prerequisites
+Choose your profile and create a run folder:
 
-Before starting, ensure you have the required tools installed:
+```bash
+./scripts/initialize_run.sh --profile model-a-rest --tool "YourTool" --tool-ver "1.0"
+```
 
-- **Node.js** version 18 or higher (required for generated implementations)
-- **npm** (comes with Node.js)
-- **Bash shell** (macOS/Linux) or **PowerShell** (Windows)
-- **Git** (optional but recommended)
+This creates `runs/YYYYMMDDTHHmm/` with:
+- `start_build_api_prompt.txt` — the prompt to paste into your AI tool
+- `run.config` — run metadata
+- `PawMate/` — workspace for the AI-generated implementation
 
-**👉 New to setup?** See **[docs/Setup_Instructions.md](docs/Setup_Instructions.md)** for detailed installation guides for:
-- macOS (Homebrew, nvm, or direct download)
-- Windows (PowerShell recommended, or Git Bash)
-- Linux (apt, yum, or nvm)
+### 2. Submit the Prompt to Your AI Tool
 
-**Verify your environment:**
+1. Open a new agent session in your AI coding tool
+2. Copy the **entire contents** of `start_build_api_prompt.txt`
+3. Paste it as the first message
+4. **Wait for the AI to complete all work** (see section below)
+
+### 3. Monitor Progress and Send 'continue' If Needed
+
+**CRITICAL FOR OPERATORS:**
+
+AI tools may pause or stop before completing all required work. If your AI tool stops and the implementation is not 100% complete (code written, built, seeded, started, and all tests passing), you MUST send a message to continue:
+
+```
+continue
+```
+
+**Keep sending 'continue' until the AI reports:**
+- ✅ All code is written
+- ✅ Build completes successfully (`npm install` passes)
+- ✅ Seed data is loaded and verified
+- ✅ API server has started and responded to health check
+- ✅ All tests are written and passing (100% pass rate)
+- ✅ All benchmark artifacts are generated (contract, run instructions, acceptance checklist, AI run report)
+
+**Do NOT accept partial completion.** The specification requires the AI to work autonomously until 100% complete. If it stops prematurely, prompt it to continue.
+
+### 4. Verify the Implementation
+
+Once the AI reports completion:
+
+```bash
+cd runs/YYYYMMDDTHHmm/PawMate
+./startup.sh  # Starts the API (and UI if built)
+```
+
+Access the API at: http://localhost:3000
+
+### 5. Review Benchmark Artifacts
+
+Check that all required artifacts were generated:
+- `backend/openapi.yaml` (or GraphQL schema) — API contract
+- `benchmark/run_instructions.md` — operator instructions
+- `benchmark/acceptance_checklist.md` — acceptance criteria evidence
+- `benchmark/ai_run_report.md` — timing and metrics
+- Tests (in `backend/`) — automated test suite
+
+### 6. Generate and Submit Results
+
+```bash
+# From the challenge repo root
+./scripts/generate_result_file.sh --run-dir runs/YYYYMMDDTHHmm
+
+# Review and validate
+cd /path/to/pawmate-ai-results
+./scripts/validate_result.sh results/submitted/your-result-file.json
+```
+
+See [`docs/Submitting_Results.md`](docs/Submitting_Results.md) for detailed submission instructions.
+
+---
+
+## About the PawMate Specification
+
+The AI tool builds a pet adoption management application with:
+- **Two model options**: Model A (Minimum) or Model B (Full with auth + search)
+- **Two API styles**: REST or GraphQL
+- **Enforced domain constraints**: Animal lifecycle state machine, auditable decision workflow, deterministic behavior
+- **Required tech stack**: Node.js + Express + SQLite (backend), Vite + React + TypeScript (frontend)
+
+The specification intentionally includes non-trivial requirements to differentiate AI capabilities:
+- State machine enforcement and validation
+- Multi-step decision workflow with explanations
+- Deterministic ordering and reset-to-seed
+- Comprehensive acceptance criteria
+
+## Operator Prerequisites
+
+Before running benchmarks, verify your environment:
 
 ```bash
 # macOS / Linux
@@ -48,183 +115,233 @@ Before starting, ensure you have the required tools installed:
 .\scripts\verify_environment.ps1
 ```
 
-This will check that you have all required tools and compatible versions.
+**Required tools:**
+- **Node.js** version 18 or higher (for testing generated implementations)
+- **npm** (comes with Node.js)
+- **Bash shell** (macOS/Linux) or **PowerShell** (Windows)
+- **Git** (optional but recommended)
+
+**👉 Need installation help?** See [`docs/Setup_Instructions.md`](docs/Setup_Instructions.md) for platform-specific guides.
 
 ---
 
-## Quick Start (5 steps)
+## Benchmark Profiles
 
-1. **Clone the repo** and open it in your AI coding tool:
-   ```bash
-   git clone https://github.com/rsdickerson/pawmate-ai-challenge.git
-   cd pawmate-ai-challenge
-   ```
+Choose one profile per run (combines Model + API Style):
 
-2. **Pick a profile** (Model × API style):
-   | Profile | Target Model | API Style |
-   |---------|--------------|-----------|
-   | `model-a-rest` | Model A (Minimum) | REST |
-   | `model-a-graphql` | Model A (Minimum) | GraphQL |
-   | `model-b-rest` | Model B (Full) | REST |
-   | `model-b-graphql` | Model B (Full) | GraphQL |
-
-3. **Generate your run folder and prompt**:
-   ```bash
-   ./scripts/initialize_run.sh --profile model-a-rest --tool "YourTool" --tool-ver "1.0"
-   ```
-   This creates `runs/YYYYMMDDTHHmm/` with:
-   - `run.config` — your run parameters
-   - `start_build_prompt.txt` — the prompt to paste into your AI tool
-   - `PawMate/` — workspace folder for all generated code
-
-4. **Open a new AI agent** and paste the contents of `start_build_prompt.txt` as the first message.
-
-5. **Keep all artifacts** in `runs/.../PawMate/` for scoring.
-
-That's it! The AI tool will generate the implementation. See the [Operator Guide](#operator-guide-step-by-step) below for verification and scoring.
+| Profile | Model | API Style | Description |
+|---------|-------|-----------|-------------|
+| `model-a-rest` | Minimum | REST | Baseline capabilities |
+| `model-a-graphql` | Minimum | GraphQL | Baseline capabilities |
+| `model-b-rest` | Full | REST | Adds auth + search |
+| `model-b-graphql` | Full | GraphQL | Adds auth + search |
 
 ---
 
-## Core constraints (read this first)
-The spec is designed to support reproducible benchmarking. Key constraints include:
+## Common Operator Issues
 
-- **Two selectable models**:
-  - **Model A (Minimum)**: baseline capability set.
-  - **Model B (Full)**: Model A plus additional requirements.
-- **API-first**: the API is the **system of record**; any UI is optional and non-normative.
-- **Choose exactly one API style**: **REST _or_ GraphQL** (do not implement both).
-- **One contract artifact is required**:
-  - REST: a machine-readable REST contract (e.g., OpenAPI)
-  - GraphQL: a schema contract artifact
-- **Determinism + reset-to-seed**: implementations must define a deterministic seed dataset and provide a **non-interactive reset-to-seed** mechanism suitable for repeated runs.
-- **No external integrations**: do not require third-party services (including external storage/CDN, email/SMS, SSO providers, etc.).
-- **No scope creep / overreach**: do not invent features beyond explicit `REQ-*` requirements; out-of-scope areas are labeled `NOR-*`.
-- **Privacy is out of scope**: privacy requirements are explicitly non-goals for this benchmark.
-- **Required tech stack**: to ensure reliable benchmarking, implementations **must** use the prescribed technology stack (see below).
+### AI Stops Before Completion
 
-## Required Tech Stack
-To ensure consistent and comparable results across benchmark runs, all implementations **must** use the following technology stack:
+**Problem:** AI tool stops after writing code but before building, testing, or generating artifacts.
 
-- **Backend**: Node.js + Express
-- **Database**: SQLite (file-based, no separate database server)
-- **Frontend**: Vite + React + TypeScript
-- **Project structure**: Frontend and backend are separate projects (separate folders with their own `package.json`)
-- **No containerization**: No Docker or container orchestration
-- **No external services**: No cloud services, external databases, or third-party APIs
-- **Cross-platform**: The application must run on both macOS and Windows using only `npm install && npm run dev`
+**Solution:** Send a simple message to continue:
+```
+continue
+```
 
-## Spec versioning
-The spec uses **semantic versioning** with git tags for immutable references.
+Keep sending `continue` until you see:
+- ✅ `build_clean` timestamp recorded
+- ✅ `seed_loaded` timestamp recorded  
+- ✅ `app_started` timestamp recorded
+- ✅ `all_tests_pass` timestamp recorded
+- ✅ All benchmark artifacts generated
 
-### Finding the current version
-- **Root file**: `SPEC_VERSION` contains the canonical version string (e.g., `v1.0.0`).
-- **Spec header**: The same version appears at the top of `docs/Master_Functional_Spec.md`.
+**Why this happens:** Some AI tools have safety limits or pause for confirmation. The spec requires autonomous completion, but operators must be prepared to prompt continuation.
 
-### Citing a frozen spec reference
-When running a benchmark, use the spec version tag as the **Frozen Spec Reference** (e.g., `v1.0.0`). This ensures reproducibility—anyone can check out that exact tag to see the spec you used.
+### Determining If Build Is Complete
 
-### Releasing a new spec version
-1. Edit the spec docs as needed.
-2. Decide the next SemVer (`vMAJOR.MINOR.PATCH`).
-3. Update `SPEC_VERSION` and the header in `docs/Master_Functional_Spec.md` to the new version.
-4. Commit with a message like: `spec: bump to vX.Y.Z`.
-5. Create an **annotated** git tag on that commit:
+Check the AI run report (`PawMate/benchmark/ai_run_report.md`) for these required timestamps:
+
+```yaml
+generation_started: 2025-12-26T10:15:00.000Z
+code_complete: 2025-12-26T10:25:00.000Z
+build_clean: 2025-12-26T10:26:30.000Z
+seed_loaded: 2025-12-26T10:27:00.000Z
+app_started: 2025-12-26T10:27:15.000Z
+all_tests_pass: 2025-12-26T10:32:45.000Z
+```
+
+**If any timestamp shows "Unknown" or is missing**, the build is incomplete. Send `continue`.
+
+### Build or Test Failures
+
+If the AI reports build errors or test failures:
+1. **Do NOT manually fix code** — this counts as operator intervention
+2. Send `continue` and let the AI fix its own errors
+3. The AI should iterate until all tests pass
+4. Record the number of test iterations in your run notes
+
+---
+
+## Key Documentation for Operators
+
+### Workflow Guides
+- [`QUICK_START_CHECKLIST.md`](QUICK_START_CHECKLIST.md) — step-by-step checklist for first run
+- [`docs/Benchmarking_Method.md`](docs/Benchmarking_Method.md) — official benchmarking procedure
+- [`docs/Submitting_Results.md`](docs/Submitting_Results.md) — how to submit benchmark results
+- [`docs/Setup_Instructions.md`](docs/Setup_Instructions.md) — platform-specific installation guides
+
+### Specification Documents (What AI Builds)
+- [`docs/Master_Functional_Spec.md`](docs/Master_Functional_Spec.md) — complete functional requirements
+- [`docs/API_Contract.md`](docs/API_Contract.md) — API contract requirements
+- [`docs/Acceptance_Criteria.md`](docs/Acceptance_Criteria.md) — definition of "feature complete"
+- [`docs/Seed_Data.md`](docs/Seed_Data.md) — deterministic seed dataset requirements
+
+### Troubleshooting and Edge Cases
+- [`docs/SANDBOX_SOLUTION.md`](docs/SANDBOX_SOLUTION.md) — handling sandbox restrictions during npm install
+- [`docs/GRAPHQL_RESOLVER_PATTERN.md`](docs/GRAPHQL_RESOLVER_PATTERN.md) — GraphQL resolver requirements
+- [`docs/Cross_Platform_Support.md`](docs/Cross_Platform_Support.md) — Windows/macOS/Linux compatibility
+
+---
+
+## Spec Versioning
+
+The specification uses semantic versioning with git tags:
+- **Current version**: See `SPEC_VERSION` file in repo root
+- **Frozen reference**: Use git tags (e.g., `v2.0.0`) when citing the spec
+- **Verify consistency**: Run `./scripts/verify_spec_version.sh`
+
+When running a benchmark, record the spec version tag in your `run.config` to ensure reproducibility.
+
+---
+
+## Detailed Operator Workflow
+
+### Step 1: Initialize a Run
+
    ```bash
-   git tag -a vX.Y.Z -m "Spec version vX.Y.Z"
-   ```
-6. Push the commit and tag:
-   ```bash
-   git push origin main --tags
-   ```
-
-### Verifying spec version consistency
-Run the verification script to check that `SPEC_VERSION`, the spec doc, and the git tag are in sync:
-```bash
-./scripts/verify_spec_version.sh            # informational check
-./scripts/verify_spec_version.sh --require-tag  # strict check (for releases/CI)
+./scripts/initialize_run.sh --profile model-a-rest --tool "Cursor" --tool-ver "0.43.6"
 ```
 
-## Canonical docs (source of truth)
-- `docs/Master_Functional_Spec.md` — the functional spec, requirement IDs (`REQ-*`), non-requirements (`NOR-*`), Model A/B.
-- `docs/API_Contract.md` — contract artifact requirements (REST/GraphQL).
-- `docs/UI_Requirements.md` — principles-based guidance for UI-API integration (contract-driven approach).
-- `docs/Seed_Data.md` — deterministic seed dataset + reset-to-seed requirements.
-- `docs/Image_Handling.md` — image handling constraints (if applicable to the selected model).
-- `docs/Acceptance_Criteria.md` — acceptance criteria used to determine "feature complete".
-- `docs/Benchmarking_Method.md` — benchmarking procedure + required artifacts + evidence-first scoring inputs.
-- `docs/SANDBOX_SOLUTION.md` — guidance for handling sandbox restrictions during build (npm install).
-- `docs/GRAPHQL_RESOLVER_PATTERN.md` — critical GraphQL resolver structure requirements for express-graphql + buildSchema.
+**What this does:**
+- Creates timestamped folder: `runs/20251226T1500/`
+- Generates `start_build_api_prompt.txt` with all parameters filled
+- Creates workspace: `runs/20251226T1500/PawMate/`
+- Records run metadata in `run.config`
 
-## Operator Guide (step-by-step)
-This repository does **not** ship an application. The "usable application" is created by the AI tool under test in your local workspace, along with the benchmark artifact bundle (contract + instructions + evidence).
+### Step 2: Submit Prompt to AI Tool
 
-> **TL;DR:** Use the [Quick Start](#quick-start-5-steps) above to generate your run folder and prompt, then follow these steps for verification and scoring.
+1. Open a **new agent session** in your AI tool
+2. Copy **entire contents** of `start_build_api_prompt.txt`
+3. Paste as the first message
+4. **Do not interrupt** — let the AI work autonomously
 
-### 0) Get the repository locally
-```bash
-git clone https://github.com/rsdickerson/pawmate-ai-challenge.git
-cd pawmate-ai-challenge
+**Expected AI behavior:**
+- Records `generation_started` timestamp immediately
+- Writes all code files
+- Runs `npm install` (requests network permissions if needed)
+- Loads and verifies seed data
+- Starts the API server
+- Runs tests (iterates until all pass)
+- Generates all benchmark artifacts
+- Records completion timestamps
+
+### Step 3: Monitor and Continue If Needed
+
+**Watch for completion indicators:**
+
+✅ **Completed run** shows:
 ```
-Open the folder in your AI tool/IDE.
-
-### 1) Generate a run folder
-Use the run initializer to create a timestamped run folder with all config pre-filled:
-```bash
-./scripts/initialize_run.sh --profile model-a-rest --tool "YourTool" --tool-ver "1.0"
-```
-
-This creates:
-- `runs/YYYYMMDDTHHmm/run.config` — run parameters
-- `runs/YYYYMMDDTHHmm/start_build_prompt.txt` — the prompt to use
-- `runs/YYYYMMDDTHHmm/PawMate/` — workspace for the implementation
-
-### 2) Start the AI run
-- Open a new AI agent/chat session.
-- Copy the contents of `start_build_prompt.txt` and paste as the first message.
-- The tool generates the implementation in the `PawMate/` workspace folder.
-
-### 3) TTFR ("first runnable")
-- Follow the tool's run instructions (copy/paste; non-interactive).
-- TTFR ends when the system is runnable without operator code edits (see `docs/Benchmarking_Method.md`).
-
-### 4) Determinism + acceptance (TTFC)
-- Run reset-to-seed twice and verify golden checks in `docs/Seed_Data.md`.
-- Run acceptance checks for the selected model and save pass/fail evidence (`docs/Acceptance_Criteria.md`).
-
-### 5) Required artifacts to keep
-All artifacts should be saved in the run folder (`runs/YYYYMMDDTHHmm/`):
-- `run.config` — auto-generated by the initializer
-- `start_build_prompt.txt` — auto-generated by the initializer
-- Full tool transcript (save as `transcript.md` or similar)
-- Run instructions (from the tool output)
-- Contract artifact (OpenAPI or GraphQL schema)
-- Acceptance checklist + evidence bundle
-- Determinism evidence bundle
-- Overreach notes/evidence
-
-### 6) Scoring and comparison
-- Score using `docs/Scoring_Rubric.md` (grounded in `docs/Benchmarking_Method.md` metrics/evidence).
-- Compare tools using `docs/Comparison_Report_Template.md`.
-
-### 7) Submit your results (optional)
-
-Want to contribute your benchmark results to the community? Submit them for inclusion in comparison reports:
-
-```bash
-# Generate result file
-./scripts/generate_result_file.sh --run-dir runs/YYYYMMDDTHHmm
-
-# Submit via email
-./scripts/submit_result.sh your-result-file.json
+✓ All code written
+✓ Build successful (npm install completed)
+✓ Seed data loaded and verified
+✓ API server started and responsive
+✓ All tests passing (100% pass rate)
+✓ Benchmark artifacts generated
 ```
 
-The submission script will:
-- Validate your result file
-- Prompt for optional attribution (or submit anonymously)
-- Open your email client with pre-filled content
-- Guide you through the submission process
+⚠️ **Incomplete run** shows:
+- Code written but no build attempt
+- Build successful but no tests run
+- Tests run but failures not fixed
+- Missing timestamps in ai_run_report.md
+- Missing benchmark artifacts
 
-See **[docs/Submitting_Results.md](docs/Submitting_Results.md)** for detailed instructions and alternative submission methods.
+**If incomplete, send:**
+```
+continue
+```
 
-## Repository note
-- The **PawMate** canonical spec lives in `docs/` at the repository root.
+**Keep sending `continue` until the AI completes all work.** Do not manually edit code or fix errors — this corrupts the benchmark.
+
+### Step 4: Verify Implementation
+
+```bash
+cd runs/20251226T1500/PawMate
+
+# Check that services can start
+./startup.sh
+
+# Access the API
+open http://localhost:3000
+```
+
+**Verify artifacts exist:**
+- `backend/openapi.yaml` (or `backend/schema.graphql`)
+- `benchmark/run_instructions.md`
+- `benchmark/acceptance_checklist.md`
+- `benchmark/ai_run_report.md`
+- Tests in `backend/` (e.g., `backend/tests/` or `backend/src/**/*.test.js`)
+
+### Step 5: Generate Result File
+
+```bash
+# From challenge repo root
+./scripts/generate_result_file.sh --run-dir runs/20251226T1500
+```
+
+This extracts metrics from the AI run report and creates a standardized result file.
+
+### Step 6: Validate and Submit (Optional)
+
+```bash
+# Copy to results repo
+cp your-result-file.json /path/to/pawmate-ai-results/results/submitted/
+
+# Validate
+cd /path/to/pawmate-ai-results
+./scripts/validate_result.sh results/submitted/your-result-file.json
+
+# Submit via PR
+git add results/submitted/your-result-file.json
+git commit -m "Add benchmark result for Cursor model-a-rest"
+git push origin main
+```
+
+See [`docs/Submitting_Results.md`](docs/Submitting_Results.md) for detailed submission instructions.
+
+---
+
+## Repository Structure
+
+```
+pawmate-ai-challenge/
+├── docs/                      # Frozen specification documents
+├── scripts/                   # Operator scripts (initialize, verify, generate results)
+├── prompts/                   # Prompt templates (rendered by initialize_run.sh)
+├── profiles/                  # Benchmark profiles (model + API style combinations)
+├── runs/                      # Generated run folders (timestamped)
+│   └── 20251226T1500/        # Example run folder
+│       ├── run.config        # Run metadata
+│       ├── start_build_api_prompt.txt  # Generated prompt
+│       └── PawMate/          # AI-generated implementation workspace
+└── SPEC_VERSION              # Current specification version
+```
+
+---
+
+## Support and Contributions
+
+- **Issues**: Report problems or ask questions via GitHub Issues
+- **Results**: Submit benchmark results via [`docs/Submitting_Results.md`](docs/Submitting_Results.md)
+- **Spec improvements**: Propose changes via pull request (follows semver process)

@@ -63,10 +63,39 @@ You MUST work strictly within scope and MUST NOT invent requirements. If somethi
 - You MUST NOT pause to ask "should I create this file?" or similar confirmations.
 - You MUST write files immediately without waiting for human approval.
 - You MUST proceed continuously through implementation without unnecessary stops.
-- You MUST NOT pause and request operator input (e.g., “click Keep All”, “confirm”, “type continue”). Assume the operator is **not available**.
+- You MUST NOT pause and request operator input (e.g., "click Keep All", "confirm", "type continue"). Assume the operator is **not available**.
 - If a requirement is ambiguous, default to the **smallest reasonable compliant** interpretation, label it `ASM-####`, and keep going.
 
 Pausing for file-creation confirmations corrupts the timing measurements that compare tools.
+
+### 1.2) Autonomous Completion — Work Until 100% Done (MUST)
+**CRITICAL — DO NOT STOP UNTIL COMPLETE:**
+
+You MUST continue working autonomously until ALL of the following are complete:
+- ✅ All code files are written
+- ✅ Build completes successfully (`npm install` finishes with no errors)
+- ✅ Seed data is loaded and verified
+- ✅ API server starts and responds to health check
+- ✅ All tests are written and passing (100% pass rate achieved)
+- ✅ All benchmark artifacts are generated (contract, run instructions, acceptance checklist, AI run report with all timestamps)
+
+**DO NOT STOP OR PAUSE** after:
+- Writing code files (you must continue to build)
+- Successful build (you must continue to seed and start)
+- Starting the server (you must continue to run tests)
+- First test run (you must iterate until ALL tests pass)
+- Partial artifact generation (you must complete ALL required artifacts)
+
+**If you encounter errors or failures:**
+- Fix them yourself and continue
+- Iterate as many times as needed
+- DO NOT ask the operator for help or wait for input
+- DO NOT stop with failing tests — keep iterating until they all pass
+
+**Completion criteria:**
+You have NOT completed your work until the `all_tests_pass` timestamp is recorded and all benchmark artifacts exist with complete content.
+
+If the operator sends "continue", it means you stopped prematurely. Resume work from where you left off and proceed to 100% completion.
 
 ---
 
@@ -626,4 +655,14 @@ generation_started: [current ISO-8601 UTC timestamp with milliseconds, e.g. 2025
 ```
 
 Then confirm you understand the constraints above and begin implementation for the selected Target Model and API Style.
+
+**REMINDER — You MUST work autonomously until 100% complete:**
+- Do NOT stop after writing code
+- Do NOT stop after successful build
+- Do NOT stop after starting the server
+- Do NOT stop with failing tests
+- Do NOT stop without generating all benchmark artifacts
+- Continue iterating until ALL tests pass and ALL artifacts are complete
+
+If you stop prematurely, the operator will send "continue" to prompt you to resume. Avoid this by completing all work in one autonomous session.
 

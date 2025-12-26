@@ -40,10 +40,12 @@ Each run MUST use a standardized wrapper that:
 - **Restates the overreach guardrail**: do not implement beyond `REQ-*` and respect `NOR-*`.
 - **Requires explicit assumptions** labeled `ASM-*` when the spec is ambiguous (default to the smallest compliant interpretation and proceed).
 - **Requires zero operator interaction during generation**: the tool MUST NOT pause for confirmations or require the operator to type "continue" or approve changes mid-run.
+- **Requires autonomous completion**: the tool MUST continue working until 100% complete (all code written, built, seeded, started, tested to 100% pass rate, and all artifacts generated). The tool MUST NOT stop after partial completion.
 - **Requires a contract artifact** compliant with `docs/API_Contract.md`.
 - **Requires reset-to-seed + determinism behavior** per `docs/Seed_Data.md` (including operator-friendly reset instructions).
 - **Requires acceptance verification** against `docs/Acceptance_Criteria.md` for the selected model.
 - **Requires operator run instructions** that are copy/paste friendly (no interactive prompts).
+- **Requires automated test generation and execution**: the tool MUST generate tests, run them, iterate to fix failures, and continue until all tests pass (100% pass rate).
 
 > Note: See `prompts/api_start_prompt_template.md` for the API start prompt template; this appendix defines the requirement that a wrapper exists and what it must contain. Use `./scripts/initialize_run.sh` to render the templates with run-specific values.
 
@@ -68,6 +70,36 @@ During the run:
 - If the operator answers questions, record each answer verbatim.
 
 > Benchmark expectation: A high-quality run should require **no clarifications**. Tools SHOULD default to `ASM-*` assumptions and proceed rather than blocking on operator input.
+
+### 3.5) Monitor progress and send continuation prompts if needed (operator)
+The standardized prompt requires the AI to work autonomously until 100% complete (all code written, built, seeded, started, tested to 100% pass rate, and all artifacts generated). However, some AI tools may stop prematurely due to safety limits or internal constraints.
+
+**Operator procedure:**
+1. **Monitor AI progress** for completion indicators:
+   - All code files written
+   - Build successful (`npm install` completed)
+   - Seed data loaded and verified
+   - API server started and responsive
+   - All tests passing (100% pass rate)
+   - All benchmark artifacts generated with complete timestamps
+
+2. **If AI stops before 100% complete**, send a continuation prompt:
+   ```
+   continue
+   ```
+
+3. **Record each continuation prompt** sent:
+   - Count: total number of `continue` messages sent
+   - Context: what stage the AI had reached when it stopped (e.g., "stopped after writing code, before build")
+
+4. **Keep sending `continue`** until the AI reaches 100% completion as defined above.
+
+**Benchmark metric:** Record the number of continuation prompts required. This is a quality indicator:
+- 0 continuations = ideal autonomous behavior
+- 1-2 continuations = tool has stopping points but resumes well
+- 3+ continuations = tool struggles with autonomous completion
+
+**Important:** Continuation prompts are NOT counted as "clarifications" or "operator interventions" in the traditional sense, as they do not provide new information or fix code. They are a separate metric tracking the tool's autonomous completion capability.
 
 ### 4) Track reruns and interventions (operator)
 If the tool’s output does not lead to a runnable system:
@@ -154,6 +186,18 @@ Each run MUST record the following metrics.
 - **Required evidence**:
   - tool transcript excerpts showing each clarification question
   - operator responses (if provided) recorded verbatim in the run record
+
+#### M-03.5: Continuation prompts required
+- **What it measures**: Count of "continue" messages the operator had to send because the AI stopped before reaching 100% completion (all code written, built, seeded, started, tested to 100% pass rate, and all artifacts generated).
+- **How to measure**: Count each time the operator sent a continuation prompt (typically the message "continue" or similar).
+- **Required evidence**:
+  - operator log or tool transcript showing each continuation prompt sent
+  - context note for each continuation (e.g., "stopped after code generation, before build")
+- **Quality indicator**: 
+  - 0 = ideal autonomous completion
+  - 1-2 = tool has stopping points but resumes well
+  - 3+ = tool struggles with autonomous completion
+- **Note**: Continuation prompts are distinct from clarifications (M-03) and interventions (M-04). They don't provide new information or fix code; they simply prompt the AI to resume work.
 
 #### M-04: Operator interventions (manual edits)
 - **What it measures**: Count of manual changes beyond copy/paste execution of tool-provided instructions.

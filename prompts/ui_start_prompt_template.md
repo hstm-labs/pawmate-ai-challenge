@@ -57,6 +57,36 @@ This UI run MUST be treated as fully independent:
 
 You MUST work strictly within scope and MUST NOT invent requirements. If something is ambiguous, you MUST either ask a clarification question or record the smallest compliant assumption as an explicit `ASM-####`.
 
+### 1.1) Autonomous Completion — Work Until 100% Done (MUST)
+**CRITICAL — DO NOT STOP UNTIL COMPLETE:**
+
+You MUST continue working autonomously until ALL of the following are complete:
+- ✅ All UI code files are written
+- ✅ UI build completes successfully (`npm install` finishes with no errors)
+- ✅ UI runs without runtime errors
+- ✅ API server is running and responsive (verify before UI development, start if needed)
+- ✅ Both servers (API and UI) are running simultaneously
+- ✅ All benchmark artifacts are updated (run instructions, UI run summary with all timestamps)
+- ✅ Startup/shutdown scripts are updated to manage both services
+
+**DO NOT STOP OR PAUSE** after:
+- Writing UI code files (you must continue to build)
+- Successful build (you must continue to start services)
+- Starting only the API (you must also start the UI)
+- Starting only the UI (you must verify API is running too)
+- Partial artifact updates (you must complete ALL required updates)
+
+**If you encounter errors or failures:**
+- Fix them yourself and continue
+- Iterate as many times as needed
+- DO NOT ask the operator for help or wait for input
+- DO NOT stop with build or runtime errors — keep iterating until everything works
+
+**Completion criteria:**
+You have NOT completed your work until both the API and UI are running, accessible, and all benchmark artifacts are updated with complete content including all timestamps.
+
+If the operator sends "continue", it means you stopped prematurely. Resume work from where you left off and proceed to 100% completion.
+
 ---
 
 ### 2) In-Scope Inputs (Frozen Spec Files)
@@ -339,4 +369,14 @@ ui_generation_started: [current ISO-8601 UTC timestamp with milliseconds, e.g. 2
 **THEN, immediately verify the API server is running** (see section 5). If not running, start it before proceeding.
 
 Then confirm you understand that the backend already exists and begin UI implementation for the selected Target Model.
+
+**REMINDER — You MUST work autonomously until 100% complete:**
+- Do NOT stop after writing UI code
+- Do NOT stop after successful build
+- Do NOT stop with only API running (UI must also be running)
+- Do NOT stop with only UI running (API must also be running)
+- Do NOT stop without updating all benchmark artifacts
+- Continue iterating until BOTH services are running and ALL artifacts are complete
+
+If you stop prematurely, the operator will send "continue" to prompt you to resume. Avoid this by completing all work in one autonomous session.
 
