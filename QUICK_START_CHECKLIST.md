@@ -1,5 +1,23 @@
 # PawMate Benchmarking - Quick Start Checklist
 
+## 🚀 Choose Your Method
+
+### Option 1: npm CLI (Quick Start - No Cloning)
+
+```bash
+npm install -g pawmate-ai-challenge
+mkdir my-benchmark && cd my-benchmark
+pawmate init --profile model-a-rest --tool "YourTool" --tool-ver "1.0"
+```
+
+**See:** [`cli/README.md`](cli/README.md) for full CLI documentation
+
+### Option 2: Clone Repository (This Checklist)
+
+Continue below for the full repository-based workflow.
+
+---
+
 ## ✅ Pre-Flight Checklist
 
 Before running your first benchmark, complete these steps:

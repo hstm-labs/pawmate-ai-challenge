@@ -1,0 +1,45 @@
+{
+  "name": "pawmate-ai-challenge",
+  "version": "1.0.0",
+  "description": "PawMate AI Benchmark CLI - Initialize and submit benchmark runs without cloning the repo",
+  "type": "module",
+  "main": "src/index.js",
+  "bin": {
+    "pawmate": "./bin/pawmate.js"
+  },
+  "files": [
+    "bin",
+    "src"
+  ],
+  "scripts": {
+    "prepare": "node scripts/bundle-templates.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "benchmark",
+    "ai",
+    "cli",
+    "pawmate"
+  ],
+  "author": "Scott Dickerson",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rsdickerson/pawmate-ai-challenge.git",
+    "directory": "cli"
+  },
+  "bugs": {
+    "url": "https://github.com/rsdickerson/pawmate-ai-challenge/issues"
+  },
+  "homepage": "https://github.com/rsdickerson/pawmate-ai-challenge/tree/main/cli#readme",
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "commander": "^12.0.0",
+    "fs-extra": "^11.2.0",
+    "open": "^10.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
+

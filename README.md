@@ -12,6 +12,50 @@ This is an **operator's toolkit** for running AI benchmarking experiments:
 
 This is **not** an application implementation. The AI tool you're testing will generate the PawMate application during the benchmark run.
 
+## Two Ways to Run Benchmarks
+
+### Option 1: npm CLI (Recommended for Quick Start)
+
+Install the CLI globally and run benchmarks without cloning:
+
+```bash
+# Install globally
+npm install -g pawmate-ai-challenge
+
+# Initialize a run from any directory
+mkdir my-benchmark && cd my-benchmark
+pawmate init --profile model-a-rest --tool "YourTool" --tool-ver "1.0"
+
+# Submit results
+pawmate submit .pawmate-run-*/benchmark/result.json
+```
+
+**Benefits:**
+- ✅ No repo cloning required
+- ✅ Works from any directory
+- ✅ Automatic email + optional GitHub submission
+- ✅ Cross-platform (macOS, Windows, Linux)
+
+**See:** [`cli/README.md`](cli/README.md) for detailed CLI documentation
+
+### Option 2: Clone Repository (Full Access)
+
+Clone the repo for full access to docs, scripts, and spec files:
+
+```bash
+git clone https://github.com/rsdickerson/pawmate-ai-challenge.git
+cd pawmate-ai-challenge
+./scripts/initialize_run.sh --profile model-a-rest --tool "YourTool"
+```
+
+**Benefits:**
+- ✅ Full access to all documentation
+- ✅ Direct access to spec files
+- ✅ Ability to modify templates
+- ✅ See full git history
+
+---
+
 ## Operator Quick Start
 
 ### 1. Initialize a Benchmark Run
