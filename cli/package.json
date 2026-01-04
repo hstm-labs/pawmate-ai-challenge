@@ -1,11 +1,14 @@
 {
-  "name": "pawmate-ai-challenge",
+  "name": "@fastcraft/pawmate-ai-challenge",
   "version": "1.0.0",
   "description": "PawMate AI Benchmark CLI - Initialize and submit benchmark runs without cloning the repo",
   "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
   "main": "src/index.js",
   "bin": {
-    "pawmate": "./bin/pawmate.js"
+    "pawmate": "bin/pawmate.js"
   },
   "files": [
     "bin",
@@ -25,7 +28,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/rsdickerson/pawmate-ai-challenge.git",
+    "url": "git+https://github.com/rsdickerson/pawmate-ai-challenge.git",
     "directory": "cli"
   },
   "bugs": {
@@ -42,4 +45,3 @@
     "node": ">=18.0.0"
   }
 }
-
