@@ -1,7 +1,7 @@
 {
   "name": "@fastcraft/pawmate-ai-challenge",
-  "version": "1.0.0",
-  "description": "PawMate AI Benchmark CLI - Initialize and submit benchmark runs without cloning the repo",
+  "version": "1.0.1",
+  "description": "PawMate AI Benchmark CLI - Initialize, build, and submit benchmark runs",
   "type": "module",
   "publishConfig": {
     "access": "public"
@@ -28,13 +28,13 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rsdickerson/pawmate-ai-challenge.git",
+    "url": "git+https://github.com/fastcraft-ai/pawmate-ai-challenge.git",
     "directory": "cli"
   },
   "bugs": {
-    "url": "https://github.com/rsdickerson/pawmate-ai-challenge/issues"
+    "url": "https://github.com/fastcraft-ai/pawmate-ai-challenge/issues"
   },
-  "homepage": "https://github.com/rsdickerson/pawmate-ai-challenge/tree/main/cli#readme",
+  "homepage": "https://fastcraft-ai.github.io/pawmate-ai-challenge/",
   "dependencies": {
     "chalk": "^5.3.0",
     "commander": "^12.0.0",
