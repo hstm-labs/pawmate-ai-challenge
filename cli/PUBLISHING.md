@@ -60,9 +60,9 @@ cd ~/pawmate-cli-test
 pawmate init --profile model-a-rest --tool "TestTool" --tool-ver "1.0"
 
 # Verify files were created
-ls -la .pawmate-run-*/
-cat .pawmate-run-*/run.config
-head -30 .pawmate-run-*/start_build_api_prompt.txt
+ls -la pawmate-run-*/
+cat pawmate-run-*/run.config
+head -30 pawmate-run-*/start_build_api_prompt.txt
 ```
 
 ### 4. Login to npm

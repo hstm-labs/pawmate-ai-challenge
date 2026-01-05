@@ -48,15 +48,21 @@ export default async function init(options) {
   const timestamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, '').replace('T', 'T').slice(0, 15);
   const cwd = process.cwd();
   
-  // Default: visible directory. --hidden flag creates hidden directory
-  const dirPrefix = options.hidden ? '.pawmate-run' : 'pawmate-run';
-  const finalRunDir = runDir || path.join(cwd, `${dirPrefix}-${timestamp}`);
+  const finalRunDir = runDir || path.join(cwd, `pawmate-run-${timestamp}`);
   
   // Create run folder structure
   await fs.ensureDir(path.join(finalRunDir, 'PawMate'));
   await fs.ensureDir(path.join(finalRunDir, 'benchmark'));
+  await fs.ensureDir(path.join(finalRunDir, 'docs'));
   
   const workspacePath = path.join(finalRunDir, 'PawMate');
+  
+  // Copy bundled docs to run directory
+  const bundledDocsPath = path.join(__dirname, '..', 'docs');
+  const runDocsPath = path.join(finalRunDir, 'docs');
+  if (await fs.pathExists(bundledDocsPath)) {
+    await fs.copy(bundledDocsPath, runDocsPath, { overwrite: true });
+  }
   
   // Generate run ID
   const toolSlug = tool.replace(/\s+/g, '-');
@@ -80,12 +86,11 @@ export default async function init(options) {
   apiRendered = apiRendered.replace('[Tool name + version/build id]', toolDisplay);
   apiRendered = apiRendered.replace('[e.g., ToolX-ModelA-Run1]', runId);
   apiRendered = apiRendered.replace('[commit/tag/hash or immutable archive id]', finalSpecVer);
-  apiRendered = apiRendered.replace(/\[repo-root-path\]/g, '(bundled with CLI)');
+  apiRendered = apiRendered.replace(/\[repo-root-path\]/g, finalRunDir);
   apiRendered = apiRendered.replace(/\[workspace-path\]/g, workspacePath);
   
-  // Replace {Spec Root} placeholders - point to bundled templates
-  const bundledDocsNote = '(docs bundled with CLI - see GitHub repo for reference)';
-  apiRendered = apiRendered.replace(/\{Spec Root\}/g, bundledDocsNote);
+  // Replace {Spec Root} placeholders - point to run directory (docs are in run-dir/docs/)
+  apiRendered = apiRendered.replace(/\{Spec Root\}/g, finalRunDir);
   
   // Replace {Workspace Path} placeholders
   apiRendered = apiRendered.replace(/\{Workspace Path\}/g, workspacePath);
@@ -131,11 +136,11 @@ export default async function init(options) {
     uiRendered = uiRendered.replace('[Tool name + version/build id]', toolDisplay);
     uiRendered = uiRendered.replace('[e.g., ToolX-ModelA-Run1-UI]', `${runId}-UI`);
     uiRendered = uiRendered.replace('[commit/tag/hash or immutable archive id]', finalSpecVer);
-    uiRendered = uiRendered.replace(/\[repo-root-path\]/g, bundledDocsNote);
+    uiRendered = uiRendered.replace(/\[repo-root-path\]/g, finalRunDir);
     uiRendered = uiRendered.replace(/\[workspace-path\]/g, workspacePath);
     
     // Replace {Spec Root} placeholders
-    uiRendered = uiRendered.replace(/\{Spec Root\}/g, bundledDocsNote);
+    uiRendered = uiRendered.replace(/\{Spec Root\}/g, finalRunDir);
     
     // Replace {Workspace Path} placeholders
     uiRendered = uiRendered.replace(/\{Workspace Path\}/g, workspacePath);
@@ -176,7 +181,7 @@ export default async function init(options) {
 # Generated: ${new Date().toISOString()}
 
 spec_version=${finalSpecVer}
-spec_root=(bundled with CLI)
+spec_root=${path.join(finalRunDir, 'docs')}
 tool=${tool}
 tool_ver=${toolVer}
 model=${profileConfig.model}

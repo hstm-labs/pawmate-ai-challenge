@@ -14,15 +14,17 @@ const cliRoot = path.join(__dirname, '..');
 const parentRoot = path.join(cliRoot, '..');
 
 async function bundleTemplates() {
-  console.log('📦 Bundling templates and profiles...');
+  console.log('📦 Bundling templates, profiles, and docs...');
   
   try {
     // Create destination directories
     const templatesDir = path.join(cliRoot, 'src', 'templates');
     const profilesDir = path.join(cliRoot, 'src', 'profiles');
+    const docsDir = path.join(cliRoot, 'src', 'docs');
     
     await fs.ensureDir(templatesDir);
     await fs.ensureDir(profilesDir);
+    await fs.ensureDir(docsDir);
     
     // Copy prompts
     const promptsSource = path.join(parentRoot, 'prompts');
@@ -40,6 +42,15 @@ async function bundleTemplates() {
       console.log('✓ Copied profiles to src/profiles/');
     } else {
       console.warn('⚠ Profiles directory not found at', profilesSource);
+    }
+    
+    // Copy docs
+    const docsSource = path.join(parentRoot, 'docs');
+    if (await fs.pathExists(docsSource)) {
+      await fs.copy(docsSource, docsDir, { overwrite: true });
+      console.log('✓ Copied docs to src/docs/');
+    } else {
+      console.warn('⚠ Docs directory not found at', docsSource);
     }
     
     // Copy SPEC_VERSION

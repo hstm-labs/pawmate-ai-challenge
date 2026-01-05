@@ -65,7 +65,6 @@ pawmate init --profile <profile> --tool <tool-name> [options]
 - `--tool-ver <version>` - Tool version or build ID
 - `--spec-ver <version>` - Frozen spec version (defaults to bundled version)
 - `--run-dir <path>` - Custom run directory path
-- `--hidden` - Create hidden directory (starts with dot, for power users)
 
 **Profiles:**
 
@@ -82,19 +81,12 @@ pawmate init --profile model-a-rest --tool "Cursor" --tool-ver "v0.43.1"
 
 **What it creates:**
 
-- `pawmate-run-<timestamp>/` - Run directory (visible by default)
+- `pawmate-run-<timestamp>/` - Run directory
   - `start_build_api_prompt.txt` - API/backend prompt
   - `start_build_ui_prompt.txt` - UI/frontend prompt
   - `run.config` - Run configuration
   - `PawMate/` - Workspace for generated code
   - `benchmark/` - Benchmark artifacts folder
-
-**Note:** Use `--hidden` flag to create `.pawmate-run-<timestamp>/` (hidden directory) instead.
-
-**Directory Naming Philosophy:**
-- **Default (visible):** Most users prefer seeing their run folders - no surprises, easy to find
-- **Hidden option:** Power users who want minimal clutter can opt-in with `--hidden`
-- **Benefit:** Fewer "where did my files go?" support questions
 
 ### `pawmate submit`
 
@@ -119,11 +111,11 @@ pawmate submit <result-file.json> [options]
 
 ```bash
 # Email submission only (default)
-pawmate submit .pawmate-run-*/benchmark/result.json
+pawmate submit pawmate-run-*/benchmark/result.json
 
 # Email + GitHub issue (requires token)
 export GITHUB_TOKEN=ghp_xxxxxxxxxxxx
-pawmate submit .pawmate-run-*/benchmark/result.json
+pawmate submit pawmate-run-*/benchmark/result.json
 
 # Or provide token as flag
 pawmate submit result.json --github-token ghp_xxxxxxxxxxxx
@@ -170,11 +162,7 @@ pawmate submit result.json --github-token your-token-here
 ```bash
 mkdir pawmate-benchmark && cd pawmate-benchmark
 pawmate init --profile model-a-rest --tool "Cursor" --tool-ver "v0.43"
-# Creates pawmate-run-<timestamp>/ (visible directory)
-
-# Power users can use --hidden for a cleaner directory listing:
-# pawmate init --profile model-a-rest --tool "Cursor" --hidden
-# Creates .pawmate-run-<timestamp>/ (hidden directory)
+# Creates pawmate-run-<timestamp>/
 ```
 
 ### 2. Copy Prompts to AI Agent
