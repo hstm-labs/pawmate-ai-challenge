@@ -8,7 +8,7 @@ A command-line tool for initializing and submitting PawMate AI benchmark runs. I
 
 ```bash
 # Install globally
-npm install -g pawmate-ai-challenge
+npm install -g @fastcraft/pawmate-ai-challenge
 
 # Create a project directory
 mkdir my-pawmate-benchmark
@@ -25,23 +25,60 @@ cat pawmate-run-*/start_build_ui_prompt.txt
 pawmate submit pawmate-run-*/benchmark/result.json
 ```
 
+### Command Syntax by Installation Method
+
+| Approach | Installation | Running Commands |
+|----------|-------------|------------------|
+| **Global** | `npm install -g @fastcraft/pawmate-ai-challenge` | `pawmate init ...`<br>`pawmate submit ...` |
+| **Local** | `npm install @fastcraft/pawmate-ai-challenge` | `npx pawmate init ...`<br>`npx pawmate submit ...` |
+| **On-Demand** | _(none)_ | `npx @fastcraft/pawmate-ai-challenge init ...`<br>`npx @fastcraft/pawmate-ai-challenge submit ...` |
+
 ## Installation
 
-### Global Installation (Recommended)
+Choose one of three approaches based on your preference:
+
+### Approach A: Global Installation (Recommended)
+
+Install once, use the `pawmate` command anywhere.
 
 ```bash
-npm install -g pawmate-ai-challenge
+npm install -g @fastcraft/pawmate-ai-challenge
 ```
 
-This makes the `pawmate` command available system-wide.
-
-### Local Installation (npx)
-
-If you don't want to install globally, you can use `npx`:
+After installation, the `pawmate` command is available system-wide:
 
 ```bash
-npx pawmate-ai-challenge init --profile model-a-rest --tool "YourTool"
+pawmate init --profile model-a-rest --tool "Cursor"
+pawmate submit result.json
 ```
+
+### Approach B: Local Installation
+
+Install in your project directory and use `npx` to run commands.
+
+```bash
+npm install @fastcraft/pawmate-ai-challenge
+```
+
+Run commands using `npx pawmate`:
+
+```bash
+npx pawmate init --profile model-a-rest --tool "Cursor"
+npx pawmate submit result.json
+```
+
+**Note:** If you get "command not found" errors with local installation, you must use `npx pawmate` (not just `pawmate`).
+
+### Approach C: On-Demand (No Installation)
+
+Download and run temporarily without installing.
+
+```bash
+npx @fastcraft/pawmate-ai-challenge init --profile model-a-rest --tool "Cursor"
+npx @fastcraft/pawmate-ai-challenge submit result.json
+```
+
+This downloads the package on-demand and runs it without saving to your system.
 
 ## Commands
 
@@ -78,6 +115,8 @@ pawmate init --profile <profile> --tool <tool-name> [options]
 ```bash
 pawmate init --profile model-a-rest --tool "Cursor" --tool-ver "v0.43.1"
 ```
+
+> **Local/On-Demand:** Use `npx pawmate init ...` (local) or `npx @fastcraft/pawmate-ai-challenge init ...` (on-demand)
 
 **What it creates:**
 
@@ -120,6 +159,8 @@ pawmate submit pawmate-run-*/benchmark/result.json
 # Or provide token as flag
 pawmate submit result.json --github-token ghp_xxxxxxxxxxxx
 ```
+
+> **Local/On-Demand:** Replace `pawmate` with `npx pawmate` (local) or `npx @fastcraft/pawmate-ai-challenge` (on-demand)
 
 **What it does:**
 
@@ -164,6 +205,8 @@ mkdir pawmate-benchmark && cd pawmate-benchmark
 pawmate init --profile model-a-rest --tool "Cursor" --tool-ver "v0.43"
 # Creates pawmate-run-<timestamp>/
 ```
+
+> **Note:** Examples use global install syntax. For local install, use `npx pawmate` instead of `pawmate`.
 
 ### 2. Copy Prompts to AI Agent
 
@@ -212,6 +255,27 @@ https://github.com/fastcraft-ai/pawmate-ai-results
 | Updates | `git pull` | `npm update -g pawmate-ai-challenge` |
 
 ## Troubleshooting
+
+### "command not found: pawmate"
+
+If you get this error, it means the `pawmate` command isn't in your system PATH. This happens when:
+
+1. **You installed locally** (without `-g` flag)
+2. **You haven't installed at all**
+
+**Solutions:**
+
+```bash
+# Option 1: Use npx with local installation
+npx pawmate init --profile model-a-rest --tool "Cursor"
+
+# Option 2: Use npx without installation (on-demand)
+npx @fastcraft/pawmate-ai-challenge init --profile model-a-rest --tool "Cursor"
+
+# Option 3: Install globally to use 'pawmate' directly
+npm install -g @fastcraft/pawmate-ai-challenge
+pawmate init --profile model-a-rest --tool "Cursor"
+```
 
 ### "Cannot find package" errors
 
