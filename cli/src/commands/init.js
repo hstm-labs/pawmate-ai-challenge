@@ -186,6 +186,14 @@ export default async function init(options) {
 
     // Interactive tool name prompt if not provided via flag
     if (!tool) {
+        console.log('')
+        console.log(chalk.gray('Examples:'))
+        console.log(chalk.gray('  Cursor, Windsurf, Antigravity, Zed, Replit, GithubAgentHQ, JetBrainsAI'))
+        console.log(chalk.gray('  ClaudeCode, ChatGPT, Phind, Aider'))
+        console.log(chalk.gray('  Copilot, VSCode+Copilot, IntelliJ+Copilot, PyCharm+Copilot, WebStorm+Copilot, Rider+Copilot, Neovim+Copilot'))
+        console.log(chalk.gray('  Tabnine, VSCode+Tabnine, IntelliJ+Tabnine, Codeium, VSCode+Codeium, IntelliJ+Codeium'))
+        console.log(chalk.gray('  AmazonQ, CodeWhisperer, Cody, Continue, VSCode+Continue, IntelliJ+Continue'))
+        console.log(chalk.gray('  AskCodi, Blackbox, Roo, CodeGPT'))
         tool = await input({
             message: 'Tool name:',
             validate: (value) => {
@@ -319,13 +327,23 @@ export default async function init(options) {
   // Build tool display string
     const toolDisplay = toolVer ? `${tool} ${toolVer}` : tool
   
-  // Render API start prompt
+    // Render API start prompt with error handling
     const apiTemplatePath = path.join(__dirname, '..', 'templates', 'api_start_prompt_template.md')
-    if (!(await fs.pathExists(apiTemplatePath))) {
-        throw new Error('API start prompt template not found')
-    }
+    let apiRendered
+    
+    try {
+        if (!(await fs.pathExists(apiTemplatePath))) {
+            console.error(chalk.red('✗ Error: API start prompt template not found'))
+            console.error(chalk.yellow(`  Expected location: ${apiTemplatePath}`))
+            process.exit(1)
+        }
 
-    let apiRendered = await fs.readFile(apiTemplatePath, 'utf8')
+        apiRendered = await fs.readFile(apiTemplatePath, 'utf8')
+    } catch (error) {
+        console.error(chalk.red('✗ Error: Could not read API start prompt template'))
+        console.error(chalk.red(`  ${error.message}`))
+        process.exit(1)
+    }
   
   // Fill header fields
     apiRendered = apiRendered.replace('[Tool name + version/build id]', toolDisplay)
@@ -360,16 +378,23 @@ export default async function init(options) {
         )
   }
   
-  // Save API start prompt
+    // Save API start prompt with error handling
     const apiPromptFile = path.join(finalRunDir, 'start_build_api_prompt.txt')
-    await fs.writeFile(apiPromptFile, apiRendered, 'utf8')
+    try {
+        await fs.writeFile(apiPromptFile, apiRendered, 'utf8')
+    } catch (error) {
+        console.error(chalk.red('✗ Error: Could not write API start prompt file'))
+        console.error(chalk.red(`  ${error.message}`))
+        process.exit(1)
+    }
   
-  // Render UI start prompt
+    // Render UI start prompt with error handling
     const uiTemplatePath = path.join(__dirname, '..', 'templates', 'ui_start_prompt_template.md')
     let uiPromptFile = ''
-  
+
+    try {
   if (await fs.pathExists(uiTemplatePath)) {
-        let uiRendered = await fs.readFile(uiTemplatePath, 'utf8')
+            let uiRendered = await fs.readFile(uiTemplatePath, 'utf8')
     
     // Fill header fields
         uiRendered = uiRendered.replace('[Tool name + version/build id]', toolDisplay)
@@ -399,11 +424,16 @@ export default async function init(options) {
     }
     
     // Save UI start prompt
-        uiPromptFile = path.join(finalRunDir, 'start_build_ui_prompt.txt')
-        await fs.writeFile(uiPromptFile, uiRendered, 'utf8')
+            uiPromptFile = path.join(finalRunDir, 'start_build_ui_prompt.txt')
+            await fs.writeFile(uiPromptFile, uiRendered, 'utf8')
+        }
+    } catch (error) {
+        console.log(chalk.yellow('⚠ Warning: Could not process UI start prompt template'))
+        console.log(chalk.yellow(`  ${error.message}`))
+        uiPromptFile = '' // Reset to empty if there was an error
   }
   
-  // Write run.config
+    // Write run.config with error handling
   const runConfig = `# run.config — Benchmark Run Configuration
 # Generated: ${new Date().toISOString()}
 
@@ -415,8 +445,14 @@ model=${profileConfig.model}
 api_type=${profileConfig.api_type}
 workspace=${workspacePath}
 `
-  
-    await fs.writeFile(path.join(finalRunDir, 'run.config'), runConfig, 'utf8')
+
+    try {
+        await fs.writeFile(path.join(finalRunDir, 'run.config'), runConfig, 'utf8')
+    } catch (error) {
+        console.error(chalk.red('✗ Error: Could not write run.config file'))
+        console.error(chalk.red(`  ${error.message}`))
+        process.exit(1)
+    }
   
   // Generate result submission instructions
     const toolSlugForFilename = tool
@@ -437,11 +473,16 @@ workspace=${workspacePath}
     resultFilename
     )
   
+    try {
   await fs.writeFile(
     path.join(finalRunDir, 'benchmark', 'result_submission_instructions.md'),
     submissionInstructions,
     'utf8'
-    )
+        )
+    } catch (error) {
+        console.log(chalk.yellow('⚠ Warning: Could not write result submission instructions'))
+        console.log(chalk.yellow(`  ${error.message}`))
+    }
   
   // Output summary
     console.log('')
