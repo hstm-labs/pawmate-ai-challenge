@@ -25,12 +25,28 @@ program
 
 program
   .command('init')
-  .description('Initialize a new PawMate benchmark run')
+  .description('Initialize a new PawMate benchmark run (interactive prompts or CLI flags)')
   .option('--profile <name>', 'Profile to use (model-a-rest, model-a-graphql, model-b-rest, model-b-graphql)')
-  .option('--tool <name>', 'Tool under test (name)')
+  .option('--tool <name>', 'Tool under test (e.g., Cursor, GitHub Copilot, Claude Code)')
   .option('--tool-ver <version>', 'Tool version/build id')
-  .option('--spec-ver <version>', 'Frozen spec version (defaults to SPEC_VERSION file)')
   .option('--run-dir <path>', 'Override auto-generated run folder path')
+  .addHelpText('after', `
+
+${chalk.gray('Interactive Mode (Recommended for manual use):')}
+  ${chalk.white('pawmate init')}
+    Displays banner and prompts for profile, tool name, and tool version
+    with helpful examples and validation
+
+${chalk.gray('CLI Flag Mode (For automation/scripts):')}
+  ${chalk.white('pawmate init --profile model-a-rest --tool "Cursor" --tool-ver "0.43.0"')}
+    Bypasses prompts, uses provided flags directly
+
+${chalk.gray('Available Profiles:')}
+  model-a-rest      Model A (Minimum) + REST API
+  model-a-graphql   Model A (Minimum) + GraphQL API
+  model-b-rest      Model B (Full) + REST API
+  model-b-graphql   Model B (Full) + GraphQL API
+`)
   .action(async (options) => {
     try {
       await init(options);

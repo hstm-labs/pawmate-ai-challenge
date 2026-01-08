@@ -261,22 +261,24 @@ export default async function init(options) {
         process.exit(1)
     }
 
-    // Read spec version with error handling
-    let finalSpecVer = specVer
-  if (!finalSpecVer) {
-        const specVersionPath = path.join(__dirname, '..', 'SPEC_VERSION')
-        try {
-    if (await fs.pathExists(specVersionPath)) {
-                finalSpecVer = (await fs.readFile(specVersionPath, 'utf8')).trim()
-    } else {
-                console.log(chalk.yellow('⚠ Warning: SPEC_VERSION file not found, using default version 1.0.0'))
-                finalSpecVer = '1.0.0' // fallback
-            }
-        } catch (error) {
-            console.log(chalk.yellow('⚠ Warning: Could not read SPEC_VERSION file, using default version 1.0.0'))
-            finalSpecVer = '1.0.0'
+    // Read spec version from SPEC_VERSION file
+    const specVersionPath = path.join(__dirname, '..', 'SPEC_VERSION')
+    let finalSpecVer
+    try {
+        if (await fs.pathExists(specVersionPath)) {
+            finalSpecVer = (await fs.readFile(specVersionPath, 'utf8')).trim()
+        } else {
+            console.log(chalk.yellow('⚠ Warning: SPEC_VERSION file not found, using default version 1.0.0'))
+            finalSpecVer = '1.0.0' // fallback
+        }
+    } catch (error) {
+        console.log(chalk.yellow('⚠ Warning: Could not read SPEC_VERSION file, using default version 1.0.0'))
+        finalSpecVer = '1.0.0'
     }
-  }
+    
+    // Display spec version
+    console.log('')
+    console.log(chalk.gray(`Using spec version: ${finalSpecVer}`))
   
   // Generate run folder path
     const timestamp = new Date()
@@ -484,14 +486,15 @@ workspace=${workspacePath}
         console.log(chalk.yellow(`  ${error.message}`))
     }
   
-  // Output summary
+    // Output summary
     console.log('')
     console.log(chalk.cyan('━'.repeat(60)))
     console.log(chalk.green('✓ Run initialized!'))
     console.log(chalk.cyan('━'.repeat(60)))
     console.log('')
-    console.log(`  Run folder:  ${chalk.bold(finalRunDir)}`)
-    console.log(`  Workspace:   ${chalk.bold(workspacePath)}`)
+    console.log(`  Run folder:    ${chalk.bold(finalRunDir)}`)
+    console.log(`  Workspace:     ${chalk.bold(workspacePath)}`)
+    console.log(`  Spec version:  ${chalk.bold(finalSpecVer)}`)
     console.log('')
     console.log('  Generated prompts:')
     console.log(`    API: ${chalk.yellow(apiPromptFile)}`)

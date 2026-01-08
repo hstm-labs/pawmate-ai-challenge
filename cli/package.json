@@ -1,6 +1,6 @@
 {
   "name": "@fastcraft/pawmate-ai-challenge",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "PawMate AI Benchmark CLI - Initialize, build, and submit benchmark runs",
   "type": "module",
   "publishConfig": {

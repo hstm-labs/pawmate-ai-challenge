@@ -14,7 +14,14 @@ npm install -g @fastcraft/pawmate-ai-challenge
 mkdir my-pawmate-benchmark
 cd my-pawmate-benchmark
 
-# Initialize a benchmark run
+# Initialize a benchmark run (interactive mode - recommended)
+pawmate init
+# Displays banner and prompts for:
+#   - Profile selection (Model A/B, REST/GraphQL)
+#   - Tool name (with examples: Cursor, Copilot, Claude Code, etc.)
+#   - Tool version
+
+# Or use CLI flags for automation/scripts
 pawmate init --profile model-a-rest --tool "Cursor" --tool-ver "v0.43"
 
 # Copy the generated prompts to your AI agent
@@ -86,22 +93,31 @@ This downloads the package on-demand and runs it without saving to your system.
 
 Initialize a new benchmark run with pre-filled prompt templates.
 
-**Usage:**
+**Interactive Mode (Recommended):**
 
 ```bash
-pawmate init --profile <profile> --tool <tool-name> [options]
+pawmate init
 ```
 
-**Required Options:**
+Displays the PawMate banner and prompts you for:
+1. **Profile selection:** Choose from Model A/B with REST/GraphQL via menu
+2. **Tool name:** Enter your tool with helpful examples (Cursor, Copilot, Claude Code, Windsurf, etc.)
+3. **Tool version:** Enter version with validation
 
-- `--profile <name>` - Benchmark profile (see profiles below)
-- `--tool <name>` - Tool under test (e.g., "Cursor", "GitHub Copilot")
+Interactive mode provides the best experience with clear examples, validation, and guidance.
 
-**Optional:**
+**CLI Flag Mode (For automation/scripts):**
 
-- `--tool-ver <version>` - Tool version or build ID
-- `--spec-ver <version>` - Frozen spec version (defaults to bundled version)
-- `--run-dir <path>` - Custom run directory path
+```bash
+pawmate init --profile <profile> --tool <tool-name> --tool-ver <version> [options]
+```
+
+**Flags:**
+
+- `--profile <name>` - Benchmark profile (optional in interactive mode)
+- `--tool <name>` - Tool under test (optional in interactive mode)
+- `--tool-ver <version>` - Tool version/build id (optional in interactive mode)
+- `--run-dir <path>` - Custom run directory path (optional)
 
 **Profiles:**
 
@@ -110,13 +126,17 @@ pawmate init --profile <profile> --tool <tool-name> [options]
 - `model-b-rest` - Model B (Full) + REST API
 - `model-b-graphql` - Model B (Full) + GraphQL API
 
-**Example:**
+**Examples:**
 
 ```bash
+# Interactive mode (recommended for manual use)
+pawmate init
+
+# CLI flag mode (for automation/scripts)
 pawmate init --profile model-a-rest --tool "Cursor" --tool-ver "v0.43.1"
 ```
 
-> **Local/On-Demand:** Use `npx pawmate init ...` (local) or `npx @fastcraft/pawmate-ai-challenge init ...` (on-demand)
+> **Local/On-Demand:** Use `npx pawmate init` (local) or `npx @fastcraft/pawmate-ai-challenge init` (on-demand)
 
 **What it creates:**
 
@@ -202,7 +222,14 @@ pawmate submit result.json --github-token your-token-here
 
 ```bash
 mkdir pawmate-benchmark && cd pawmate-benchmark
+
+# Interactive mode (recommended)
+pawmate init
+# Follow the prompts to select profile, enter tool name, and version
+
+# Or use CLI flags for automation
 pawmate init --profile model-a-rest --tool "Cursor" --tool-ver "v0.43"
+
 # Creates pawmate-run-<timestamp>/
 ```
 
