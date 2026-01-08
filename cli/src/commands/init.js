@@ -1,10 +1,165 @@
-import fs from 'fs-extra';
-import path from 'path';
-import chalk from 'chalk';
-import { fileURLToPath } from 'url';
+import fs from 'fs-extra'
+import path from 'path'
+import chalk from 'chalk'
+import { select, input } from '@inquirer/prompts'
+import { fileURLToPath } from 'url'
+import { readFileSync } from 'fs'
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+
+// Read package version for banner
+const packageJsonPath = path.join(__dirname, '..', '..', 'package.json')
+const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'))
+const PACKAGE_VERSION = packageJson.version
+
+/**
+ * Display PawMate banner matching APM styling
+ * @param {string} version - Package version
+ */
+function displayBanner(version = '1.0.0') {
+    const BANNER_WIDTH = 80
+    const border = chalk.blue('║')
+    const innerWidth = BANNER_WIDTH - 2 // 78 characters
+
+    // Build ASCII art as plain text first to get accurate character counts
+    const plainLine1 = '██████╗  █████╗ ██╗    ██╗███╗   ███╗ █████╗ ████████╗███████╗'
+    const plainLine2 = '██╔══██╗██╔══██╗██║    ██║████╗ ████║██╔══██╗╚══██╔══╝██╔════╝'
+    const plainLine3 = '██████╔╝███████║██║ █╗ ██║██╔████╔██║███████║   ██║   █████╗  '
+    const plainLine4 = '██╔═══╝ ██╔══██║██║███╗██║██║╚██╔╝██║██╔══██║   ██║   ██╔══╝  '
+    const plainLine5 = '██║     ██║  ██║╚███╔███╔╝██║ ╚═╝ ██║██║  ██║   ██║   ███████╗'
+    const plainLine6 = '╚═╝     ╚═╝  ╚═╝ ╚══╝╚══╝ ╚═╝     ╚═╝╚═╝  ╚═╝   ╚═╝   ╚══════╝'
+
+    // Apply colors maintaining same character positions
+    const line1 =
+        chalk.white('██████╗') +
+        '  ' +
+        chalk.cyan('█████╗') +
+        ' ' +
+        chalk.white('██╗    ██╗') +
+        chalk.cyan('███╗   ███╗') +
+        ' ' +
+        chalk.white('█████╗') +
+        ' ' +
+        chalk.cyan('████████╗') +
+        chalk.white('███████╗')
+    const line2 =
+        chalk.white('██╔══██╗') +
+        chalk.cyan('██╔══██╗') +
+        chalk.white('██║    ██║') +
+        chalk.cyan('████╗ ████║') +
+        chalk.white('██╔══██╗') +
+        chalk.cyan('╚══██╔══╝') +
+        chalk.white('██╔════╝')
+    const line3 =
+        chalk.white('██████╔╝') +
+        chalk.cyan('███████║') +
+        chalk.white('██║ █╗ ██║') +
+        chalk.cyan('██╔████╔██║') +
+        chalk.white('███████║') +
+        '   ' +
+        chalk.cyan('██║   ') +
+        chalk.white('█████╗  ')
+    const line4 =
+        chalk.white('██╔═══╝') +
+        ' ' +
+        chalk.cyan('██╔══██║') +
+        chalk.white('██║███╗██║') +
+        chalk.cyan('██║╚██╔╝██║') +
+        chalk.white('██╔══██║') +
+        '   ' +
+        chalk.cyan('██║   ') +
+        chalk.white('██╔══╝  ')
+    const line5 =
+        chalk.white('██║') +
+        '     ' +
+        chalk.cyan('██║  ██║') +
+        chalk.white('╚███╔███╔╝') +
+        chalk.cyan('██║ ╚═╝ ██║') +
+        chalk.white('██║  ██║') +
+        '   ' +
+        chalk.cyan('██║   ') +
+        chalk.white('███████╗')
+    const line6 =
+        chalk.white('╚═╝') +
+        '     ' +
+        chalk.cyan('╚═╝  ╚═╝') +
+        ' ' +
+        chalk.white('╚══╝╚══╝') +
+        ' ' +
+        chalk.cyan('╚═╝     ╚═╝') +
+        chalk.white('╚═╝  ╚═╝') +
+        '   ' +
+        chalk.cyan('╚═╝   ') +
+        chalk.white('╚══════╝')
+
+    // Helper to center content
+    const centerLine = (content, plainLength) => {
+        const padding = innerWidth - plainLength
+        const leftPad = Math.floor(padding / 2)
+        const rightPad = padding - leftPad
+        return ' '.repeat(leftPad) + content + ' '.repeat(rightPad)
+    }
+
+    // Version text centered
+    const versionText = `PawMate AI Challenge v${version}`
+    const versionLine = centerLine(chalk.cyan.bold(versionText), versionText.length)
+
+    // Tagline centered
+    const tagline = 'Benchmarking AI Coding Assistants on Real-World Tasks'
+    const taglineLine = centerLine(chalk.gray(tagline), tagline.length)
+
+    // GitHub link centered
+    const link = 'github.com/fastcraft-ai/pawmate-ai-challenge'
+    const linkLine = centerLine(chalk.cyan.underline(link), link.length)
+
+    const lines = [
+        chalk.blue('╔══════════════════════════════════════════════════════════════════════════════╗'),
+        border + ' '.repeat(innerWidth) + border,
+        border + ' '.repeat(innerWidth) + border,
+        border + centerLine(line1, plainLine1.length) + border,
+        border + centerLine(line2, plainLine2.length) + border,
+        border + centerLine(line3, plainLine3.length) + border,
+        border + centerLine(line4, plainLine4.length) + border,
+        border + centerLine(line5, plainLine5.length) + border,
+        border + centerLine(line6, plainLine6.length) + border,
+        border + ' '.repeat(innerWidth) + border,
+        border + versionLine + border,
+        border + ' '.repeat(innerWidth) + border,
+        border + taglineLine + border,
+        border + ' '.repeat(innerWidth) + border,
+        border + linkLine + border,
+        border + ' '.repeat(innerWidth) + border,
+        chalk.blue('╚══════════════════════════════════════════════════════════════════════════════╝'),
+    ]
+
+    lines.forEach((line) => console.log(line))
+    console.log() // Blank line for spacing
+}
+
+// Profile choices for interactive selection
+const profileChoices = [
+    {
+        name: 'Model A - REST API',
+        value: 'model-a-rest',
+        description: 'Minimum feature set with REST API endpoints',
+    },
+    {
+        name: 'Model A - GraphQL API',
+        value: 'model-a-graphql',
+        description: 'Minimum feature set with GraphQL API',
+    },
+    {
+        name: 'Model B - REST API',
+        value: 'model-b-rest',
+        description: 'Full feature set with REST API endpoints',
+    },
+    {
+        name: 'Model B - GraphQL API',
+        value: 'model-b-graphql',
+        description: 'Full feature set with GraphQL API',
+    },
+]
 
 /**
  * Initialize a new PawMate benchmark run
@@ -16,96 +171,180 @@ const __dirname = path.dirname(__filename);
  * @param {string} [options.runDir] - Run directory path
  */
 export default async function init(options) {
-  const { profile, tool, toolVer = '', specVer = '', runDir = '' } = options;
+    let { profile, tool, toolVer = '', specVer = '', runDir = '' } = options
+
+    // Display banner at start
+    displayBanner(PACKAGE_VERSION)
+
+    // Interactive profile selection if not provided via flag
+    if (!profile) {
+        profile = await select({
+            message: 'Select benchmark profile:',
+            choices: profileChoices,
+        })
+    }
+
+    // Interactive tool name prompt if not provided via flag
+    if (!tool) {
+        tool = await input({
+            message: 'Tool name:',
+            validate: (value) => {
+                if (value.length === 0) {
+                    return 'Tool name is required'
+                }
+                if (value.trim() !== value) {
+                    return 'Tool name cannot have leading or trailing whitespace'
+                }
+                return true
+            },
+        })
+    }
+
+    // Interactive tool version prompt if not provided via flag
+    if (!toolVer) {
+        toolVer = await input({
+            message: 'Tool version (required):',
+            validate: (value) => {
+                if (value.length === 0) {
+                    return 'Tool version is required'
+                }
+                // Accept semver-like formats: x.y.z, x.y, or plain version strings
+                const validVersionPattern = /^[a-zA-Z0-9][a-zA-Z0-9.\-_]*$/
+                if (!validVersionPattern.test(value)) {
+                    return 'Version must contain only alphanumeric characters, dots, hyphens, or underscores'
+                }
+                return true
+            },
+        })
+    }
   
   // Validate profile
-  const validProfiles = ['model-a-rest', 'model-a-graphql', 'model-b-rest', 'model-b-graphql'];
+    const validProfiles = ['model-a-rest', 'model-a-graphql', 'model-b-rest', 'model-b-graphql']
   if (!validProfiles.includes(profile)) {
-    throw new Error(`Invalid profile: ${profile}. Valid profiles: ${validProfiles.join(', ')}`);
-  }
-  
-  // Load profile configuration
-  const profilePath = path.join(__dirname, '..', 'profiles', `${profile}.profile`);
-  if (!await fs.pathExists(profilePath)) {
-    throw new Error(`Profile file not found: ${profile}.profile`);
-  }
-  
-  const profileContent = await fs.readFile(profilePath, 'utf8');
-  const profileConfig = parseProfile(profileContent);
-  
-  // Read spec version
-  let finalSpecVer = specVer;
+        console.error(chalk.red(`✗ Error: Invalid profile "${profile}"`))
+        console.error(chalk.yellow(`  Valid profiles: ${validProfiles.join(', ')}`))
+        process.exit(1)
+    }
+
+    // Load profile configuration with error handling
+    const profilePath = path.join(__dirname, '..', 'profiles', `${profile}.profile`)
+    
+    try {
+        // Verify profile file exists before attempting to read
+        if (!(await fs.pathExists(profilePath))) {
+            console.error(chalk.red(`✗ Error: Profile file not found: ${profile}.profile`))
+            console.error(chalk.yellow(`  Expected location: ${profilePath}`))
+            console.error(chalk.yellow(`  Available profiles: ${validProfiles.join(', ')}`))
+            process.exit(1)
+        }
+
+        const profileContent = await fs.readFile(profilePath, 'utf8')
+        var profileConfig = parseProfile(profileContent)
+        
+        // Validate required profile config fields
+        if (!profileConfig.model || !profileConfig.api_type) {
+            console.error(chalk.red(`✗ Error: Invalid profile configuration in ${profile}.profile`))
+            console.error(chalk.yellow('  Profile must specify both "model" and "api_type"'))
+            process.exit(1)
+        }
+    } catch (error) {
+        console.error(chalk.red(`✗ Error reading profile file: ${profile}.profile`))
+        console.error(chalk.red(`  ${error.message}`))
+        process.exit(1)
+    }
+
+    // Read spec version with error handling
+    let finalSpecVer = specVer
   if (!finalSpecVer) {
-    const specVersionPath = path.join(__dirname, '..', 'SPEC_VERSION');
+        const specVersionPath = path.join(__dirname, '..', 'SPEC_VERSION')
+        try {
     if (await fs.pathExists(specVersionPath)) {
-      finalSpecVer = (await fs.readFile(specVersionPath, 'utf8')).trim();
+                finalSpecVer = (await fs.readFile(specVersionPath, 'utf8')).trim()
     } else {
-      finalSpecVer = '1.0.0'; // fallback
+                console.log(chalk.yellow('⚠ Warning: SPEC_VERSION file not found, using default version 1.0.0'))
+                finalSpecVer = '1.0.0' // fallback
+            }
+        } catch (error) {
+            console.log(chalk.yellow('⚠ Warning: Could not read SPEC_VERSION file, using default version 1.0.0'))
+            finalSpecVer = '1.0.0'
     }
   }
   
   // Generate run folder path
-  const timestamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, '').replace('T', 'T').slice(0, 15);
-  const cwd = process.cwd();
+    const timestamp = new Date()
+        .toISOString()
+        .replace(/[-:]/g, '')
+        .replace(/\.\d{3}Z$/, '')
+        .replace('T', 'T')
+        .slice(0, 15)
+    const cwd = process.cwd()
+
+    const finalRunDir = runDir || path.join(cwd, `pawmate-run-${timestamp}`)
   
-  const finalRunDir = runDir || path.join(cwd, `pawmate-run-${timestamp}`);
-  
-  // Create run folder structure
-  await fs.ensureDir(path.join(finalRunDir, 'PawMate'));
-  await fs.ensureDir(path.join(finalRunDir, 'benchmark'));
-  await fs.ensureDir(path.join(finalRunDir, 'docs'));
-  
-  const workspacePath = path.join(finalRunDir, 'PawMate');
-  
-  // Copy bundled docs to run directory
-  const bundledDocsPath = path.join(__dirname, '..', 'docs');
-  const runDocsPath = path.join(finalRunDir, 'docs');
+    // Create run folder structure with error handling
+    try {
+        await fs.ensureDir(path.join(finalRunDir, 'PawMate'))
+        await fs.ensureDir(path.join(finalRunDir, 'benchmark'))
+        await fs.ensureDir(path.join(finalRunDir, 'docs'))
+    } catch (error) {
+        console.error(chalk.red('✗ Error: Could not create run directory structure'))
+        console.error(chalk.red(`  ${error.message}`))
+        console.error(chalk.yellow(`  Check permissions for: ${finalRunDir}`))
+        process.exit(1)
+    }
+
+    const workspacePath = path.join(finalRunDir, 'PawMate')
+
+    // Copy bundled docs to run directory with error handling
+    const bundledDocsPath = path.join(__dirname, '..', 'docs')
+    const runDocsPath = path.join(finalRunDir, 'docs')
+    try {
   if (await fs.pathExists(bundledDocsPath)) {
-    await fs.copy(bundledDocsPath, runDocsPath, { overwrite: true });
+            await fs.copy(bundledDocsPath, runDocsPath, { overwrite: true })
+        } else {
+            console.log(chalk.yellow('⚠ Warning: Bundled docs directory not found, skipping docs copy'))
+        }
+    } catch (error) {
+        console.log(chalk.yellow('⚠ Warning: Could not copy bundled docs'))
+        console.log(chalk.yellow(`  ${error.message}`))
   }
   
   // Generate run ID
-  const toolSlug = tool.replace(/\s+/g, '-');
-  const runId = `${toolSlug}-Model${profileConfig.model}-${timestamp}`;
+    const toolSlug = tool.replace(/\s+/g, '-')
+    const runId = `${toolSlug}-Model${profileConfig.model}-${timestamp}`
   
   // Determine run number (default to 1)
-  const runNumber = 1;
+    const runNumber = 1
   
   // Build tool display string
-  const toolDisplay = toolVer ? `${tool} ${toolVer}` : tool;
+    const toolDisplay = toolVer ? `${tool} ${toolVer}` : tool
   
   // Render API start prompt
-  const apiTemplatePath = path.join(__dirname, '..', 'templates', 'api_start_prompt_template.md');
-  if (!await fs.pathExists(apiTemplatePath)) {
-    throw new Error('API start prompt template not found');
-  }
-  
-  let apiRendered = await fs.readFile(apiTemplatePath, 'utf8');
+    const apiTemplatePath = path.join(__dirname, '..', 'templates', 'api_start_prompt_template.md')
+    if (!(await fs.pathExists(apiTemplatePath))) {
+        throw new Error('API start prompt template not found')
+    }
+
+    let apiRendered = await fs.readFile(apiTemplatePath, 'utf8')
   
   // Fill header fields
-  apiRendered = apiRendered.replace('[Tool name + version/build id]', toolDisplay);
-  apiRendered = apiRendered.replace('[e.g., ToolX-ModelA-Run1]', runId);
-  apiRendered = apiRendered.replace('[commit/tag/hash or immutable archive id]', finalSpecVer);
-  apiRendered = apiRendered.replace(/\[repo-root-path\]/g, finalRunDir);
-  apiRendered = apiRendered.replace(/\[workspace-path\]/g, workspacePath);
+    apiRendered = apiRendered.replace('[Tool name + version/build id]', toolDisplay)
+    apiRendered = apiRendered.replace('[e.g., ToolX-ModelA-Run1]', runId)
+    apiRendered = apiRendered.replace('[commit/tag/hash or immutable archive id]', finalSpecVer)
+    apiRendered = apiRendered.replace(/\[repo-root-path\]/g, finalRunDir)
+    apiRendered = apiRendered.replace(/\[workspace-path\]/g, workspacePath)
   
   // Replace {Spec Root} placeholders - point to run directory (docs are in run-dir/docs/)
-  apiRendered = apiRendered.replace(/\{Spec Root\}/g, finalRunDir);
+    apiRendered = apiRendered.replace(/\{Spec Root\}/g, finalRunDir)
   
   // Replace {Workspace Path} placeholders
-  apiRendered = apiRendered.replace(/\{Workspace Path\}/g, workspacePath);
+    apiRendered = apiRendered.replace(/\{Workspace Path\}/g, workspacePath)
   
   // Check model checkbox
   if (profileConfig.model === 'A') {
-    apiRendered = apiRendered.replace(
-      '  - [ ] **Model A (Minimum)**',
-      '  - [x] **Model A (Minimum)**'
-    );
+        apiRendered = apiRendered.replace('  - [ ] **Model A (Minimum)**', '  - [x] **Model A (Minimum)**')
   } else if (profileConfig.model === 'B') {
-    apiRendered = apiRendered.replace(
-      '  - [ ] **Model B (Full)**',
-      '  - [x] **Model B (Full)**'
-    );
+        apiRendered = apiRendered.replace('  - [ ] **Model B (Full)**', '  - [x] **Model B (Full)**')
   }
   
   // Check API style checkbox
@@ -113,67 +352,55 @@ export default async function init(options) {
     apiRendered = apiRendered.replace(
       '  - [ ] **REST** (produce an OpenAPI contract artifact)',
       '  - [x] **REST** (produce an OpenAPI contract artifact)'
-    );
+        )
   } else if (profileConfig.api_type === 'GraphQL') {
     apiRendered = apiRendered.replace(
       '  - [ ] **GraphQL** (produce a GraphQL schema contract artifact)',
       '  - [x] **GraphQL** (produce a GraphQL schema contract artifact)'
-    );
+        )
   }
   
   // Save API start prompt
-  const apiPromptFile = path.join(finalRunDir, 'start_build_api_prompt.txt');
-  await fs.writeFile(apiPromptFile, apiRendered, 'utf8');
+    const apiPromptFile = path.join(finalRunDir, 'start_build_api_prompt.txt')
+    await fs.writeFile(apiPromptFile, apiRendered, 'utf8')
   
   // Render UI start prompt
-  const uiTemplatePath = path.join(__dirname, '..', 'templates', 'ui_start_prompt_template.md');
-  let uiPromptFile = '';
+    const uiTemplatePath = path.join(__dirname, '..', 'templates', 'ui_start_prompt_template.md')
+    let uiPromptFile = ''
   
   if (await fs.pathExists(uiTemplatePath)) {
-    let uiRendered = await fs.readFile(uiTemplatePath, 'utf8');
+        let uiRendered = await fs.readFile(uiTemplatePath, 'utf8')
     
     // Fill header fields
-    uiRendered = uiRendered.replace('[Tool name + version/build id]', toolDisplay);
-    uiRendered = uiRendered.replace('[e.g., ToolX-ModelA-Run1-UI]', `${runId}-UI`);
-    uiRendered = uiRendered.replace('[commit/tag/hash or immutable archive id]', finalSpecVer);
-    uiRendered = uiRendered.replace(/\[repo-root-path\]/g, finalRunDir);
-    uiRendered = uiRendered.replace(/\[workspace-path\]/g, workspacePath);
+        uiRendered = uiRendered.replace('[Tool name + version/build id]', toolDisplay)
+        uiRendered = uiRendered.replace('[e.g., ToolX-ModelA-Run1-UI]', `${runId}-UI`)
+        uiRendered = uiRendered.replace('[commit/tag/hash or immutable archive id]', finalSpecVer)
+        uiRendered = uiRendered.replace(/\[repo-root-path\]/g, finalRunDir)
+        uiRendered = uiRendered.replace(/\[workspace-path\]/g, workspacePath)
     
     // Replace {Spec Root} placeholders
-    uiRendered = uiRendered.replace(/\{Spec Root\}/g, finalRunDir);
+        uiRendered = uiRendered.replace(/\{Spec Root\}/g, finalRunDir)
     
     // Replace {Workspace Path} placeholders
-    uiRendered = uiRendered.replace(/\{Workspace Path\}/g, workspacePath);
+        uiRendered = uiRendered.replace(/\{Workspace Path\}/g, workspacePath)
     
     // Check model checkbox
     if (profileConfig.model === 'A') {
-      uiRendered = uiRendered.replace(
-        '  - [ ] **Model A (Minimum)**',
-        '  - [x] **Model A (Minimum)**'
-      );
+            uiRendered = uiRendered.replace('  - [ ] **Model A (Minimum)**', '  - [x] **Model A (Minimum)**')
     } else if (profileConfig.model === 'B') {
-      uiRendered = uiRendered.replace(
-        '  - [ ] **Model B (Full)**',
-        '  - [x] **Model B (Full)**'
-      );
+            uiRendered = uiRendered.replace('  - [ ] **Model B (Full)**', '  - [x] **Model B (Full)**')
     }
     
     // Check API style checkbox
     if (profileConfig.api_type === 'REST') {
-      uiRendered = uiRendered.replace(
-        '  - [ ] **REST**',
-        '  - [x] **REST**'
-      );
+            uiRendered = uiRendered.replace('  - [ ] **REST**', '  - [x] **REST**')
     } else if (profileConfig.api_type === 'GraphQL') {
-      uiRendered = uiRendered.replace(
-        '  - [ ] **GraphQL**',
-        '  - [x] **GraphQL**'
-      );
+            uiRendered = uiRendered.replace('  - [ ] **GraphQL**', '  - [x] **GraphQL**')
     }
     
     // Save UI start prompt
-    uiPromptFile = path.join(finalRunDir, 'start_build_ui_prompt.txt');
-    await fs.writeFile(uiPromptFile, uiRendered, 'utf8');
+        uiPromptFile = path.join(finalRunDir, 'start_build_ui_prompt.txt')
+        await fs.writeFile(uiPromptFile, uiRendered, 'utf8')
   }
   
   // Write run.config
@@ -187,13 +414,17 @@ tool_ver=${toolVer}
 model=${profileConfig.model}
 api_type=${profileConfig.api_type}
 workspace=${workspacePath}
-`;
+`
   
-  await fs.writeFile(path.join(finalRunDir, 'run.config'), runConfig, 'utf8');
+    await fs.writeFile(path.join(finalRunDir, 'run.config'), runConfig, 'utf8')
   
   // Generate result submission instructions
-  const toolSlugForFilename = tool.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/--+/g, '-').replace(/^-|-$/g, '');
-  const resultFilename = `${toolSlugForFilename}_model${profileConfig.model}_${profileConfig.api_type}_run${runNumber}_${timestamp}.json`;
+    const toolSlugForFilename = tool
+        .toLowerCase()
+        .replace(/[^a-z0-9-]/g, '-')
+        .replace(/--+/g, '-')
+        .replace(/^-|-$/g, '')
+    const resultFilename = `${toolSlugForFilename}_model${profileConfig.model}_${profileConfig.api_type}_run${runNumber}_${timestamp}.json`
   
   const submissionInstructions = generateSubmissionInstructions(
     finalRunDir,
@@ -204,46 +435,46 @@ workspace=${workspacePath}
     profileConfig.api_type,
     finalSpecVer,
     resultFilename
-  );
+    )
   
   await fs.writeFile(
     path.join(finalRunDir, 'benchmark', 'result_submission_instructions.md'),
     submissionInstructions,
     'utf8'
-  );
+    )
   
   // Output summary
-  console.log('');
-  console.log(chalk.cyan('━'.repeat(60)));
-  console.log(chalk.green('✓ Run initialized!'));
-  console.log(chalk.cyan('━'.repeat(60)));
-  console.log('');
-  console.log(`  Run folder:  ${chalk.bold(finalRunDir)}`);
-  console.log(`  Workspace:   ${chalk.bold(workspacePath)}`);
-  console.log('');
-  console.log('  Generated prompts:');
-  console.log(`    API: ${chalk.yellow(apiPromptFile)}`);
+    console.log('')
+    console.log(chalk.cyan('━'.repeat(60)))
+    console.log(chalk.green('✓ Run initialized!'))
+    console.log(chalk.cyan('━'.repeat(60)))
+    console.log('')
+    console.log(`  Run folder:  ${chalk.bold(finalRunDir)}`)
+    console.log(`  Workspace:   ${chalk.bold(workspacePath)}`)
+    console.log('')
+    console.log('  Generated prompts:')
+    console.log(`    API: ${chalk.yellow(apiPromptFile)}`)
   if (uiPromptFile) {
-    console.log(`    UI:  ${chalk.yellow(uiPromptFile)}`);
-  }
-  console.log('');
-  console.log(chalk.cyan('━'.repeat(60)));
-  console.log(chalk.bold('NEXT STEPS:'));
-  console.log('');
-  console.log('  1. Open a new AI agent/chat session');
-  console.log('  2. Copy the contents of the API start prompt:');
-  console.log(chalk.yellow(`     ${apiPromptFile}`));
-  console.log('  3. Paste it as the first message to build the API/backend');
-  console.log('');
+        console.log(`    UI:  ${chalk.yellow(uiPromptFile)}`)
+    }
+    console.log('')
+    console.log(chalk.cyan('━'.repeat(60)))
+    console.log(chalk.bold('NEXT STEPS:'))
+    console.log('')
+    console.log('  1. Open a new AI agent/chat session')
+    console.log('  2. Copy the contents of the API start prompt:')
+    console.log(chalk.yellow(`     ${apiPromptFile}`))
+    console.log('  3. Paste it as the first message to build the API/backend')
+    console.log('')
   if (uiPromptFile) {
-    console.log('  4. After API is complete, start a new session (or continue)');
-    console.log('  5. Copy the contents of the UI start prompt:');
-    console.log(chalk.yellow(`     ${uiPromptFile}`));
-    console.log('  6. Paste it to build the UI (assumes API already exists)');
-    console.log('');
-  }
-  console.log(chalk.cyan('━'.repeat(60)));
-  console.log('');
+        console.log('  4. After API is complete, start a new session (or continue)')
+        console.log('  5. Copy the contents of the UI start prompt:')
+        console.log(chalk.yellow(`     ${uiPromptFile}`))
+        console.log('  6. Paste it to build the UI (assumes API already exists)')
+        console.log('')
+    }
+    console.log(chalk.cyan('━'.repeat(60)))
+    console.log('')
 }
 
 /**
@@ -252,20 +483,20 @@ workspace=${workspacePath}
  * @returns {Object} Parsed profile config
  */
 function parseProfile(content) {
-  const config = {};
-  const lines = content.split('\n');
+    const config = {}
+    const lines = content.split('\n')
   
   for (const line of lines) {
-    const trimmed = line.trim();
+        const trimmed = line.trim()
     if (trimmed && !trimmed.startsWith('#')) {
-      const [key, value] = trimmed.split('=').map(s => s.trim());
+            const [key, value] = trimmed.split('=').map((s) => s.trim())
       if (key && value) {
-        config[key] = value;
+                config[key] = value
       }
     }
   }
   
-  return config;
+    return config
 }
 
 /**
@@ -361,6 +592,5 @@ Your result file should contain:
 - **Intervention Metrics**: Clarifications, interventions, reruns
 
 See the AI run report generated in \`${runDir}/benchmark/ai_run_report.md\` for these metrics.
-`;
+`
 }
-

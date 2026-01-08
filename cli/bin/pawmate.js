@@ -26,8 +26,8 @@ program
 program
   .command('init')
   .description('Initialize a new PawMate benchmark run')
-  .requiredOption('--profile <name>', 'Profile to use (model-a-rest, model-a-graphql, model-b-rest, model-b-graphql)')
-  .requiredOption('--tool <name>', 'Tool under test (name)')
+  .option('--profile <name>', 'Profile to use (model-a-rest, model-a-graphql, model-b-rest, model-b-graphql)')
+  .option('--tool <name>', 'Tool under test (name)')
   .option('--tool-ver <version>', 'Tool version/build id')
   .option('--spec-ver <version>', 'Frozen spec version (defaults to SPEC_VERSION file)')
   .option('--run-dir <path>', 'Override auto-generated run folder path')
