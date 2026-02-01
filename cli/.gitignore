@@ -1,10 +1,9 @@
-node_modules/
-.DS_Store
-*.log
-.env
-.env.*
-coverage/
-.nyc_output/
-dist/
-build/
+# Bundled content - generated from parent directory by scripts/bundle-templates.js
+# Run `npm prepare` to regenerate these from the source files in /docs, /prompts, /profiles
+src/docs/
+src/templates/
+src/profiles/
+src/SPEC_VERSION
 
+# npm
+node_modules/
