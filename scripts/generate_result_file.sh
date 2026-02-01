@@ -492,7 +492,7 @@ if [[ -d "$workspace/ui" ]]; then
     fi
 fi
 
-# Generate result file as JSON - v2.0 schema format
+# Generate result file as JSON - v3.0 schema format
 TEMP_SCRIPT=$(mktemp)
 cat > "$TEMP_SCRIPT" <<'PYTHON_EOF'
 import json
@@ -644,6 +644,12 @@ ui_backend_changes_required = args[i+53].lower() == "true" if len(args) > i+53 a
 submitted_timestamp = args[i+54] if len(args) > i+54 else ""
 submitted_by = args[i+55] if len(args) > i+55 else ""
 submission_method = args[i+56] if len(args) > i+56 else "automated"
+# Additional artifact paths for v3.0 schema
+api_contract_artifact_path = args[i+57] if len(args) > i+57 else ""
+api_run_instructions_path = args[i+58] if len(args) > i+58 else ""
+api_acceptance_checklist_path = args[i+59] if len(args) > i+59 else ""
+api_ai_run_report_path = args[i+60] if len(args) > i+60 else ""
+api_automated_tests_path = args[i+61] if len(args) > i+61 else ""
 
 # Parse test runs from AI run report
 test_runs = []
@@ -717,9 +723,9 @@ if ui_llm_input_tokens is not None or ui_llm_output_tokens is not None or ui_llm
         "usage_source": ui_llm_usage_source
     }
 
-# Build v2.0 schema-compliant result structure
+# Build v3.0 schema-compliant result structure
 result = {
-    "schema_version": "2.0",
+    "schema_version": "3.0",
     "result_data": {
         "run_identity": {
             "tool_name": tool_name,
@@ -751,6 +757,13 @@ result = {
                     "fail_count": test_failed or 0,
                     "not_run_count": 0,
                     "passrate": passrate_decimal if passrate_decimal is not None else 0.0
+                },
+                "artifacts": {
+                    "contract_artifact_path": api_contract_artifact_path,
+                    "run_instructions_path": api_run_instructions_path,
+                    "acceptance_checklist_path": api_acceptance_checklist_path if api_acceptance_checklist_path else None,
+                    "ai_run_report_path": api_ai_run_report_path if api_ai_run_report_path else None,
+                    "automated_tests_path": api_automated_tests_path if api_automated_tests_path else None
                 }
             }
         },
@@ -761,6 +774,17 @@ result = {
         }
     }
 }
+
+# Clean up None values in artifacts
+result["result_data"]["implementations"]["api"]["artifacts"] = {
+    k: v for k, v in result["result_data"]["implementations"]["api"]["artifacts"].items() 
+    if v is not None and v != ""
+}
+# Ensure required fields are present (even if empty string)
+if "contract_artifact_path" not in result["result_data"]["implementations"]["api"]["artifacts"]:
+    result["result_data"]["implementations"]["api"]["artifacts"]["contract_artifact_path"] = ""
+if "run_instructions_path" not in result["result_data"]["implementations"]["api"]["artifacts"]:
+    result["result_data"]["implementations"]["api"]["artifacts"]["run_instructions_path"] = ""
 
 # Add UI implementation if UI exists
 if ui_source_path:
@@ -776,14 +800,18 @@ if ui_source_path:
             "backend_changes_required": ui_backend_changes_required,
             "llm_usage": ui_llm_usage
         },
-        "build_success": ui_build_success.lower() == "true" if ui_build_success else False
+        "build_success": ui_build_success.lower() == "true" if ui_build_success else False,
+        "artifacts": {
+            "ui_source_path": ui_source_path,
+            "ui_run_summary_path": ui_run_summary_path or ""
+        }
     }
     result["result_data"]["implementations"]["ui"] = ui_impl
 
 print(json.dumps(result, indent=2, ensure_ascii=False))
 PYTHON_EOF
 
-# Call Python script with arguments (v2.0 schema format)
+# Call Python script with arguments (v3.0 schema format)
 python3 "$TEMP_SCRIPT" \
     "$tool" \
     "${tool_ver:-}" \
@@ -841,7 +869,12 @@ python3 "$TEMP_SCRIPT" \
     "${UI_BACKEND_CHANGES_REQUIRED:-false}" \
     "$SUBMITTED_TIMESTAMP" \
     "$SUBMITTED_BY" \
-    "$SUBMISSION_METHOD" > "$OUTPUT_PATH"
+    "$SUBMISSION_METHOD" \
+    "${CONTRACT_ARTIFACT_PATH:-}" \
+    "${RUN_INSTRUCTIONS_PATH:-}" \
+    "${ACCEPTANCE_CHECKLIST_PATH:-}" \
+    "${AI_RUN_REPORT_PATH:-}" \
+    "${AUTOMATED_TESTS_PATH:-}" > "$OUTPUT_PATH"
 
 # Clean up temp script
 rm -f "$TEMP_SCRIPT"

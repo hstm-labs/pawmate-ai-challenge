@@ -10,11 +10,11 @@ Result files are JSON-only for maximum automation and programmatic processing.
 
 Result files MUST be JSON (`.json`) files containing structured data.
 
-### Structure
+### Structure (v3.0 Schema)
 
 ```json
 {
-  "schema_version": "1.0",
+  "schema_version": "3.0",
   "result_data": {
     "run_identity": {
       "tool_name": "string",
@@ -27,64 +27,73 @@ Result files MUST be JSON (`.json`) files containing structured data.
       "workspace_path": "string",
       "run_environment": "string"
     },
-    "metrics": {
-      "ttfr": {
-        "start_timestamp": "ISO-8601 string",
-        "end_timestamp": "ISO-8601 string",
-        "minutes": "number or 'Unknown'"
-      },
-      "ttfc": {
-        "start_timestamp": "ISO-8601 string",
-        "end_timestamp": "ISO-8601 string",
-        "minutes": "number or 'Unknown'"
-      },
-      "clarifications_count": "number or 'Unknown'",
-      "interventions_count": "number or 'Unknown'",
-      "reruns_count": "number or 'Unknown'",
-      "test_runs": [
-        {
-          "run_number": "integer",
-          "start_timestamp": "ISO-8601 string",
-          "end_timestamp": "ISO-8601 string",
+    "implementations": {
+      "api": {
+        "generation_metrics": {
+          "llm_model": "string (e.g., 'claude-sonnet-4.5', 'gpt-4-turbo')",
+          "start_timestamp": "ISO-8601 string (UTC)",
+          "end_timestamp": "ISO-8601 string (UTC)",
           "duration_minutes": "number",
-          "total_tests": "integer",
-          "passed": "integer",
-          "failed": "integer",
-          "pass_rate": "number (0.0-1.0)"
+          "clarifications_count": "integer",
+          "interventions_count": "integer",
+          "reruns_count": "integer",
+          "test_runs": [
+            {
+              "run_number": "integer",
+              "start_timestamp": "ISO-8601 string",
+              "end_timestamp": "ISO-8601 string",
+              "duration_minutes": "number",
+              "total_tests": "integer",
+              "passed": "integer",
+              "failed": "integer",
+              "pass_rate": "number (0.0-1.0)"
+            }
+          ],
+          "test_iterations_count": "integer",
+          "llm_usage": {
+            "input_tokens": "integer or null",
+            "output_tokens": "integer or null",
+            "total_tokens": "integer or null",
+            "requests_count": "integer or null",
+            "estimated_cost_usd": "number or null",
+            "usage_source": "tool_reported|operator_estimated|unknown"
+          }
+        },
+        "acceptance": {
+          "pass_count": "integer",
+          "fail_count": "integer",
+          "not_run_count": "integer",
+          "passrate": "number (0.0-1.0)"
+        },
+        "artifacts": {
+          "contract_artifact_path": "string (required)",
+          "run_instructions_path": "string (required)",
+          "acceptance_checklist_path": "string (optional)",
+          "ai_run_report_path": "string (optional)",
+          "automated_tests_path": "string (optional)"
         }
-      ],
-      "test_iterations_count": "integer",
-      "llm_usage": {
-        "backend_model_used": "string (e.g., 'claude-sonnet-4.5', 'gpt-4-turbo')",
-        "backend_requests": "integer or null",
-        "backend_tokens": "integer or null",
-        "ui_model_used": "string or null (if UI was implemented)",
-        "ui_requests": "integer or null",
-        "ui_tokens": "integer or null",
-        "usage_source": "tool_reported|operator_estimated|unknown",
-        "estimated_cost_usd": "number or null (optional)"
       },
-      "acceptance": {
-        "model": "A",
-        "pass_count": "number or 'Unknown'",
-        "fail_count": "number or 'Unknown'",
-        "not_run_count": "number or 'Unknown'",
-        "passrate": "number or 'Unknown'"
+      "ui": {
+        "generation_metrics": {
+          "llm_model": "string",
+          "start_timestamp": "ISO-8601 string (UTC)",
+          "end_timestamp": "ISO-8601 string (UTC)",
+          "duration_minutes": "number",
+          "clarifications_count": "integer",
+          "interventions_count": "integer",
+          "reruns_count": "integer",
+          "backend_changes_required": "boolean",
+          "llm_usage": { "...same as api..." }
+        },
+        "build_success": "boolean",
+        "artifacts": {
+          "ui_source_path": "string (required)",
+          "ui_run_summary_path": "string (required)"
+        }
       }
     },
-    "artifacts": {
-      "tool_transcript_path": "string",
-      "run_instructions_path": "string",
-      "contract_artifact_path": "string",
-      "acceptance_checklist_path": "string",
-      "acceptance_evidence_path": "string",
-      "determinism_evidence_path": "string",
-      "overreach_evidence_path": "string",
-      "ai_run_report_path": "string",
-      "automated_tests_path": "string"
-    },
     "submission": {
-      "submitted_timestamp": "ISO-8601 string",
+      "submitted_timestamp": "ISO-8601 string (UTC)",
       "submitted_by": "string",
       "submission_method": "automated|manual"
     }
@@ -115,7 +124,7 @@ Example: `cursor-v0-43_modelA_REST_run1_20241218T1430.json`
 - **Field**: `schema_version`
 - **Type**: String
 - **Required**: Yes
-- **Description**: Version of this specification (currently "2.0" — see `pawmate-ai-results/schemas/result-schema-v2.0-proposed.json`)
+- **Description**: Version of this specification (currently "3.0" — see `pawmate-ai-results/schemas/result-schema-v3.0.json`)
 - **Purpose**: Enables future schema evolution
 
 ### Run Identity
@@ -124,7 +133,7 @@ All fields in `result_data.run_identity` are required and MUST match the values 
 ### Metrics
 All fields in `result_data.metrics` are required. Use `"Unknown"` if evidence is missing (per `docs/Benchmarking_Method.md` evidence-first rule).
 
-#### Operator Intervention Tracking (v2.0 Schema)
+#### Operator Intervention Tracking (v3.0 Schema)
 
 The benchmark measures how well the AI creates the entire application from the initial prompts without operator assistance. The following fields track operator interventions:
 
@@ -162,11 +171,11 @@ Result files are JSON-only for maximum automation. For human-readable reports, s
 
 ### Format Validation
 1. File MUST be valid JSON
-2. File MUST validate against JSON schema (`pawmate-ai-results/schemas/result-schema-v2.0-proposed.json`)
+2. File MUST validate against JSON schema (`pawmate-ai-results/schemas/result-schema-v3.0.json`)
 3. All required fields MUST be present
 4. Field types MUST match specification
 5. Enum values MUST be from allowed sets
-6. Timestamps MUST be valid ISO-8601 format
+6. Timestamps MUST be valid ISO-8601 UTC format (YYYY-MM-DDTHH:MM:SS.sssZ)
 7. File name MUST match naming convention
 
 ### Data Validation
